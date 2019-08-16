@@ -46,7 +46,10 @@ const DARK_COLORS = [
     '43,19,17',
     '12,15,102'
 ];
-const FONTS = ['Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;', 'inherit'];
+const FONTS = [
+    "Frutiger, 'Frutiger Linotype', Univers, Calibri, 'Gill Sans', 'Gill Sans MT', 'Myriad Pro', Myriad, 'DejaVu Sans Condensed', 'Liberation Sans', 'Nimbus Sans L', Tahoma, Geneva, 'Helvetica Neue', Helvetica, Arial, sans-serif",
+    "inherit"
+];
 
 const COVER_THICKNESS = 12;
 const PAGE_THICKNESS = (2 / 3) / 10;
@@ -122,8 +125,8 @@ const randomColor = () => {
     if (colorIndex === -1) { colorIndex = 0; }
 
     return colorIndex < DARK_COLORS.length
-        ? [DARK_COLORS[colorIndex], '#555']
-        : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], '#eee'];
+        ? [DARK_COLORS[colorIndex], '#eee']
+        : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], '#555'];
 };
 
 const abbreviateTitle = (title) => {
@@ -482,12 +485,11 @@ const BookList = (books, selected, focused, moving) => {
                 acc += Book(book, selected, focused, moving, i);
                 return acc;
             }, '')
-            // books.map(Book.bind(Book, selected, focused, moving)).join('')
         }</ul>
     </div>
     ${
         (selected !== null || focused !== null)
-            ? BookDetails(books[selected || focused])
+            ? BookDetails(books[selected] || books[focused])
             : ''
     }`;
 };
