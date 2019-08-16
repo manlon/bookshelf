@@ -59,8 +59,10 @@
                 z-index: 2;
             }
             .book.selected {
-                outline: 2px solid red;
+                outline: 2px solid #6dd5ed;
                 outline-offset: 2px;
+                overflow: visible;
+                z-index: 3;
             }
             .book.focused {
                 bottom: -4px;
@@ -88,6 +90,19 @@
             }
             .book.focused::before {
                 display: block;
+            }
+            .book.focused::after {
+                background: radial-gradient(circle at top, #6dd5ed, transparent);
+                border-radius: 0 0 8px 8px;
+                bottom: -13px;
+                content: " ";
+                display: block;
+                height: 8px;
+                left: 50%;
+                margin-left: -8px;
+                position: absolute;
+                width: 16px;
+                z-index: 4;
             }
             .title {
                 bottom: 27px;
