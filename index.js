@@ -37,7 +37,14 @@ const DARK_COLORS = [
     '38,81,125',
     '90,46,46',
     '75,0,15',
-    '141,32,54'
+    '141,32,54',
+    '23,26,48',
+    '22,46,17',
+    '97,47,16',
+    '53,16,64',
+    '126,19,27',
+    '43,19,17',
+    '12,15,102'
 ];
 const FONTS = ['Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;', 'inherit'];
 
@@ -50,7 +57,7 @@ const MAX_HEIGHT = 145;
 
 const APPROX_CHAR_PER_PAGE = 1277;
 
-const TOTAL_BOOKS = 42;
+const TOTAL_BOOKS = 47;
 
 const SHELF_WIDTH = 660;
 
@@ -114,9 +121,9 @@ const randomColor = () => {
     ) - 1;
     if (colorIndex === -1) { colorIndex = 0; }
 
-    return colorIndex < LIGHT_COLORS.length
-        ? [LIGHT_COLORS[colorIndex], '#555']
-        : [DARK_COLORS[colorIndex - LIGHT_COLORS.length], '#eee'];
+    return colorIndex < DARK_COLORS.length
+        ? [DARK_COLORS[colorIndex], '#555']
+        : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], '#eee'];
 };
 
 const abbreviateTitle = (title) => {
