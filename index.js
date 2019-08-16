@@ -47,8 +47,8 @@ const DARK_COLORS = [
     '12,15,102'
 ];
 const FONTS = [
-    "Frutiger, 'Frutiger Linotype', Univers, Calibri, 'Gill Sans', 'Gill Sans MT', 'Myriad Pro', Myriad, 'DejaVu Sans Condensed', 'Liberation Sans', 'Nimbus Sans L', Tahoma, Geneva, 'Helvetica Neue', Helvetica, Arial, sans-serif",
-    "inherit"
+    'serif',
+    'sans-serif'
 ];
 
 const COVER_THICKNESS = 12;
@@ -525,11 +525,10 @@ const Book = (book, selected, focused, moving, i) => {
         );
         border: 0 solid rgba(${book.backgroundColor});
         color: ${book.textColor};
-        font-family: ${book.font};
         height: ${book.height}px;
         line-height: ${book.thickness}px;
         width: ${book.thickness}px;
-    " class="book ${
+    " class="book ${book.font} ${
         selected === i ? 'selected' : ''} ${
         moving && selected === i ? 'moving' : ''} ${
         focused === i ? 'focused' : ''
