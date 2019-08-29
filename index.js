@@ -194,7 +194,6 @@ const initialState = (totalBooks = 10) => {
  **/
 const MODES = {
     DEFAULT: 'default',
-    VIEWING_DETAILS: 'viewing',
     MOVING: 'moving'
 };
 
@@ -342,20 +341,6 @@ class ApplicationState {
                 // execute move
                 direction = directionFromKey(state.key);
                 moveBook.bind(this)(direction);
-                return true;
-            }
-        } else
-        if (state.mode === MODES.VIEWING_DETAILS) {
-            if (state.key === 'enter') {
-                // unset selected book
-                // enter default mode
-                enterDefaultMode.bind(this)();
-                return true;
-            } else
-            if (state.key === ' ') {
-                // KEEP selected book
-                // enter moving mode
-                enterMovingMode.bind(this)();
                 return true;
             }
         } else
