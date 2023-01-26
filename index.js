@@ -1,3 +1,5 @@
+const Draggable = require("@shopify/draggable")
+
 const LIGHT_COLORS = [
     '235,219,193',
     '186,185,154',
@@ -428,6 +430,22 @@ class ApplicationState {
         return this.acceptState(state);
     }
 
+    changeSelection(idx){
+        this.data.selected = idx;
+        if (idx) {
+            let book = this.data.books[idx]
+            return book
+        } else {
+            return null
+        }
+    }
+
+    moveBookToIndex(oldIdx, newIdx) {
+        let books = this.data.books
+        let removed = books.splice(oldIdx, 1)
+        books.splice(newIdx, 0, ...removed)
+        this.render()
+    }
     render() {
         this._render(this.data);
         return this;
@@ -460,10 +478,10 @@ const shiftSelectedIndex = (index, direction, multiplier, books) => {
 const BookList = (books, selected, focused, moving) => {
     let shelfWidth = 0;
     return `<div class="book-case">
-        <ul class="book-shelf">${
+        <ul class="book-shelf" data-book-idx="0">${
             books.reduce((acc, book, i) => {
                 if (shelfWidth + book.thickness >= SHELF_WIDTH) {
-                    acc += '</ul><ul class="book-shelf">';
+                    acc += '</ul><ul class="book-shelf" data-book-idx="' + i + '">';
                     shelfWidth = 0;
                 }
                 shelfWidth += book.thickness;
@@ -525,6 +543,7 @@ const Book = (book, selected, focused, moving, i) => {
 
 const render = (state) => {
     document.getElementsByTagName('main')[0].innerHTML = BookList(state.books, state.selected, state.focused, (state.mode === MODES.MOVING));
+    initSortable()
 };
 
 const attributeBookClick = (el) => {
@@ -554,3 +573,33 @@ const attachEventHandlers = (app) => {
 
 const application = new ApplicationState(initialState(TOTAL_BOOKS), render).render();
 attachEventHandlers(application);
+
+var sortable;
+function initSortable() {
+    if (sortable) {
+        sortable.destroy()
+    }
+    sortable = new Draggable.Sortable(document.querySelectorAll('ul'), {
+        draggable: 'li'
+    });
+     sortable.on("sortable:start", (e) => {
+        let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10)
+        let book = application.changeSelection(bookIdx)
+        document.querySelector("aside.selected-book").outerHTML = BookDetails(book)
+        Array.from(document.querySelectorAll('li.book')).forEach(function(el) { 
+            el.classList.remove('focused');
+        });
+        document.querySelector(`li.book[data-index="${bookIdx}"`).classList.add('selected')
+     })
+    sortable.on("sortable:stop", (e) => {
+        let oldIdx = parseInt(e.data.dragEvent.source.dataset.index, 10)
+        let shelf = e.data.dragEvent.source.parentNode
+        let shelfIdx = parseInt(shelf.dataset.bookIdx, 10)
+        let newIdx = e.data.newIndex + shelfIdx
+        application.moveBookToIndex(oldIdx, newIdx)
+        application.changeSelection(null)
+        application.present({ name: USER_ACTIONS.CLICK_BOOK, data: newIdx });
+    })
+}
+initSortable()
+
