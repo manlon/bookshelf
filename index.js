@@ -210,10 +210,12 @@ const STATE_ACTIONS = {
 };
 
 const DIRECTIONAL_KEYS = [
+  "h",
   "j",
   "k",
   "l",
   "i",
+  ";",
   "ArrowLeft",
   "ArrowRight",
   "ArrowUp",
@@ -223,10 +225,12 @@ const DIRECTIONAL_KEYS = [
 const directionFromKey = (key) => {
   switch (key) {
     case "ArrowLeft":
+    case "h":
     case "j":
       return "l";
     case "ArrowRight":
     case "l":
+    case ";":
       return "r";
     case "ArrowUp":
     case "i":
