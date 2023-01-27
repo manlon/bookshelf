@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: 
+        "Palatino Linotype",
+        Palatino, 
+        Palladio, 
+        "URW Palladio L",
+        "Book Antiqua",
+        Baskerville,
+        "Bookman Old Style",
+        "Bitstream Charter",
+        "Nimbus Roman No9 L",
+        Garamond,
+        "Apple Garamond",
+        "ITC Garamond Narrow",
+        "New Century Schoolbook",
+        "Century Schoolbook",
+        "Century Schoolbook L",
+        Georgia, serif;
+}
+.book.serif {
+    font-family: inherit;
+}
+.book.sans-serif {
+    font-family:
+        Frutiger,
+        'Frutiger Linotype',
+        Univers,
+        Calibri,
+        'Gill Sans',
+        'Gill Sans MT',
+        'Myriad Pro',
+        Myriad,
+        'DejaVu Sans Condensed',
+        'Liberation Sans',
+        'Nimbus Sans L',
+        Tahoma,
+        Geneva,
+        'Helvetica Neue',
+        Helvetica,
+        Arial,
+        sans-serif;
+}
+
+.book::before {
+    background: #fff;
+    border-width: 0 2px 2px;
+    border-style: solid;
+    border-color: inherit;
+    box-sizing: content-box;
+    content: " ";
+    display: none;
+    height: 45px;
+    left: -2px;
+    position: absolute;
+    transform: rotateX(81deg) rotateZ(-4deg);
+    top: -26px;
+    width: calc(100% - 4px);
+    z-index: 3;
+  }
+  .book.focused::before {
+    display: block;
+  }
+  .book.focused::after {
+    background: radial-gradient(circle at top, #6dd5ed, transparent);
+    border-radius: 0 0 8px 8px;
+    bottom: -13px;
+    content: " ";
+    display: block;
+    height: 8px;
+    left: 50%;
+    margin-left: -8px;
+    position: absolute;
+    width: 16px;
+    z-index: 4;
+  }
+
+  .book-details::before {
+    background: #fff;
+    border-color: inherit;
+    border-style: solid;
+    border-radius: 2px 9px 3px 2px;
+    border-width: 2px 0 3px 2px;
+    box-shadow: -3px 0 7px #555;
+    display: block;
+    content: " ";
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 50%;
+  }
+  .book-details::after {
+    background: #fff;
+    border-color: inherit;
+    border-style: solid;
+    border-width: 2px 3px 3px 0;
+    border-radius: 6px 2px 2px 3px;
+    box-shadow: 1px 0 10px #555;
+    display: block;
+    content: " ";
+    height: 100%;
+    left: 50%;
+    overflow: hidden;
+    position: absolute;
+    top: 1px;
+    width: 50%;
+  }

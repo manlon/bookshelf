@@ -477,19 +477,26 @@ const shiftSelectedIndex = (index, direction, multiplier, books) => {
  **/
 const BookList = (books, selected, focused, moving) => {
   let shelfWidth = 0;
+  let [chunks, _] = books.reduce(
+    ([chunks, width], book, i) => {
+      if (book.thickness + width >= SHELF_WIDTH) {
+        chunks.push([[book], i]);
+        return [chunks, book.thickness];
+      } else {
+        let [chunk, _] = chunks[chunks.length - 1];
+        chunk.push(book);
+        return [chunks, width + book.thickness];
+      }
+    },
+    [[[[], 0]], 0]
+  );
   return `
-    <div class="book-case">
-        <ul class="book-shelf" data-book-idx="0">
-            ${books.reduce((acc, book, i) => {
-              if (shelfWidth + book.thickness >= SHELF_WIDTH) {
-                acc += '</ul><ul class="book-shelf" data-book-idx="' + i + '">';
-                shelfWidth = 0;
-              }
-              shelfWidth += book.thickness;
-              acc += Book(book, selected, focused, moving, i);
-              return acc;
-            }, "")}
-        </ul>
+    <div class="book-case border-[#613c00] border-t-[10px] border-x-[10px] float-right w-[770px]">
+    ${chunks
+      .map(([books, offset]) =>
+        BookShelf(books, offset, selected, focused, moving)
+      )
+      .join("")}
     </div>
     ${
       selected !== null || focused !== null
@@ -498,23 +505,37 @@ const BookList = (books, selected, focused, moving) => {
     }`;
 };
 
-const BookDetails = (book) => {
+const BookShelf = (books, offset, selected, focused, moving) => {
   return `
-     <aside class="selected-book">
-        <dl class="book-details" style="border-color: rgb(${book.backgroundColor});">
-            <dt>Title</dt>
-            <dd><b>${book.title}</b></dd>
+    <ul class="book-shelf flex h-[200px] mt-3 mb-4 p-0 items-end border-b-[6px] border-[#613c00]"
+        data-book-idx="${offset}">
+        ${books
+          .map((book, i) => Book(book, selected, focused, moving, i + offset))
+          .join("")}
+    </ul>`;
+};
 
-            <dt>Author</dt>
-            <dd>${book.author}</dd>
-
-            <dt>Year</dt>
-            <dd>© ${book.year}</dd>
-
-            <dt>Pages</dt>
-            <dd>${book.pages}pp.</dd>
+const BookDetails = (book) => {
+  deets = [
+    ["Title", `<b>${book.title}</b>`],
+    ["Author", book.author],
+    ["Year", `© ${book.year}`],
+    ["Pages", `${book.pages}pp.`],
+  ];
+  return `
+     <aside class="selected-book p-0 relative h-[268px] w-[400px]">
+        <dl class="book-details blook h-full m-0 pt-[24px] px-[8px] relative"
+            style="border-color: rgb(${book.backgroundColor});">
+          ${deets.map(([dt, dd]) => BookDetail(dt, dd)).join("")}
         </dl>
     </aside>`;
+};
+
+const BookDetail = (dt, dd) => {
+  return `
+    <dt class="text-white font-bold float-left clear-left relative w-[54%] z-[1]">${dt}</dt>
+    <dd class="m-0 float-left relative text-center w-[46%] z-[1]">${dd}</dd>
+  `;
 };
 
 const Book = (book, selected, focused, moving, i) => {
@@ -535,17 +556,42 @@ const Book = (book, selected, focused, moving, i) => {
             line-height: ${book.thickness}px;
             width: ${book.thickness}px;"
         class="book
+               box-content
+               rounded-t-sm
+               rounded-b-[1px]
+               cursor-pointer
+               text-sm
+               [overflow:hidden]
+               pt-2
+               px-0.5
+               pb-6
+               relative
+               text-center
+               whitespace-nowrap
+               z-[2]
+               [&.selected]:outline
+               [&.selected]:outline-2
+               [&.selected]:outline-[#6dd5ed]
+               [&.selected]:outline-offset-2
+               [&.selected]:z-[3]
+               [&.focused]:bottom-[-4px]
+               [&.focused]:[overflow:visible]
+               [&.focused]:[transform:rotateX(-15deg)]
+               [&.focused]:z-[1]
+               [.book.focused+&.book]:z-0
                ${book.font}
                ${selected === i ? "selected" : ""}
                ${moving && selected === i ? "moving" : ""}
                ${focused === i ? "focused" : ""}"
         title="${book.title}" data-index="${i}">
 
-        <span class="title"
+        <span class="title bottom-[27px] block left-0 truncate pt-[2px] absolute right-0 top-[8px] align-middle [writing-mode:vertical-lr]"
               style="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
-        <span class="author">${book.abbreviatedAuthor}</span>
+        <span class="author bottom-[8px] block left-0 leading-4 truncate absolute right-0 text-center">${
+          book.abbreviatedAuthor
+        }</span>
     </li>`;
 };
 
