@@ -592,8 +592,8 @@ function initSortable() {
   if (sortable) {
     sortable.destroy();
   }
-  sortable = new Draggable.Sortable(document.querySelectorAll("ul"), {
-    draggable: "li",
+  sortable = new Draggable.Sortable(document.querySelectorAll("ul.book-shelf"), {
+    draggable: "li.book",
   });
   sortable.on("sortable:start", (e) => {
     let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
