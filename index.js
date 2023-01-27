@@ -48,7 +48,8 @@ const DARK_COLORS = [
   "43,19,17",
   "12,15,102",
 ];
-const FONTS = ["font-book-serif", "font-book-sans"];
+const FONTS = ["serif", "sans"];
+const TEXT_COLORS = { LIGHT: "light", DARK: "dark" };
 
 const COVER_THICKNESS = 12;
 const PAGE_THICKNESS = 2 / 3 / 10;
@@ -127,8 +128,8 @@ const randomColor = () => {
   }
 
   return colorIndex < DARK_COLORS.length
-    ? [DARK_COLORS[colorIndex], "#eee"]
-    : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], "#555"];
+    ? [DARK_COLORS[colorIndex], TEXT_COLORS.LIGHT]
+    : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
 };
 
 const abbreviateTitle = (title) => {
@@ -542,50 +543,17 @@ const Book = (book, selected, focused, moving, i) => {
   return `
     <li style="
             --book-color: ${book.backgroundColor};
-            background: rgb(var(--book-color));
-            background: linear-gradient(
-                90deg,
-                rgba(var(--book-color),1) 0%,
-                rgba(var(--book-color),0.9) 10%,
-                rgba(var(--book-color),0.9) 70%,
-                rgba(var(--book-color),0.8) 99%,
-                rgba(var(--book-color),1) 100%
-            );
-            border: 0 solid rgba(var(--book-color));
-            color: ${book.textColor};
-            height: ${book.height}px;
-            line-height: ${book.thickness}px;
-            width: ${book.thickness}px;"
-        class="book
-               box-content
-               rounded-t-sm
-               rounded-b-[1px]
-               cursor-pointer
-               text-sm
-               [overflow:hidden]
-               pt-2
-               px-0.5
-               pb-6
-               relative
-               text-center
-               whitespace-nowrap
-               z-[2]
-               data-[selected]:outline
-               data-[selected]:outline-2
-               data-[selected]:outline-[#6dd5ed]
-               data-[selected]:outline-offset-2
-               data-[selected]:z-[3]
-               data-[focused]:bottom-[-4px]
-               data-[focused]:[overflow:visible]
-               data-[focused]:[transform:rotateX(-15deg)]
-               data-[focused]:z-[1]
-               [.book.focused+&.book]:z-0
-               ${book.font}
+            --book-height: ${book.height}px;
+            --book-thickness: ${book.thickness}px;
+            "
+        class="book"
         title="${book.title}"
         data-index="${i}"
         ${selected === i ? "data-selected" : ""}
         ${moving && selected === i ? "data-moving" : ""}
         ${focused === i ? "data-focused" : ""}
+        data-text-color="${book.textColor}"
+        data-font="${book.font}"
         >
         <span class="title bottom-[27px] block left-0 truncate pt-[2px] absolute right-0 top-[8px] align-middle [writing-mode:vertical-lr]"
               style="${book.decoration}">
@@ -640,9 +608,12 @@ function initSortable() {
   if (sortable) {
     sortable.destroy();
   }
-  sortable = new Draggable.Sortable(document.querySelectorAll("ul.book-shelf"), {
-    draggable: "li.book",
-  });
+  sortable = new Draggable.Sortable(
+    document.querySelectorAll("ul.book-shelf"),
+    {
+      draggable: "li.book",
+    }
+  );
   sortable.on("sortable:start", (e) => {
     let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
     let book = application.changeSelection(bookIdx);
