@@ -6057,22 +6057,12 @@
     );
     initSortable();
   };
-  var attributeBookClick = (el) => {
-    let bookEl = null;
-    while (el.nodeName !== "UL") {
-      if (el.nodeName === "LI" && el.className.indexOf("book") > -1) {
-        bookEl = el;
-      }
-      el = el.parentNode;
-    }
-    return bookEl;
-  };
   var attachEventHandlers = (app) => {
     window.addEventListener("keydown", handleKeyDown.bind(app), false);
     window.addEventListener("keyup", handleKeyUp.bind(app), false);
     document.getElementById("app").addEventListener("click", (e) => {
-      let bookEl;
-      if (bookEl = attributeBookClick(e.target)) {
+      let bookEl = e.target.closest("li.book");
+      if (bookEl) {
         handleBookClick.bind(app)(e, bookEl);
       }
     });
