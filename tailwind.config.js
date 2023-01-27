@@ -6,15 +6,15 @@ module.exports = {
       backgroundImage: {
         "book-gradient": `linear-gradient(
           90deg,
-          rgba(var(--book-color),1) 0%,
-          rgba(var(--book-color),0.9) 10%,
-          rgba(var(--book-color),0.9) 70%,
-          rgba(var(--book-color),0.8) 99%,
-          rgba(var(--book-color),1) 100%
+          hsla(var(--book-color),1) 0%,
+          hsla(var(--book-color),0.9) 10%,
+          hsla(var(--book-color),0.9) 70%,
+          hsla(var(--book-color),0.8) 99%,
+          hsla(var(--book-color),1) 100%
       );`,
       },
       colors: {
-        "book-color": "rgb(var(--book-color))",
+        "book-color": "hsl(var(--book-color))",
       },
       fontFamily: {
         "book-serif": [

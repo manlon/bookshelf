@@ -1,53 +1,5 @@
 const Draggable = require("@shopify/draggable");
 
-const LIGHT_COLORS = [
-  "235,219,193",
-  "186,185,154",
-  "202,186,161",
-  "196,176,151",
-  "203,192,190",
-  "223,211,213",
-  "178,177,173",
-  "213,185,181",
-];
-const DARK_COLORS = [
-  "156,94,105",
-  "89,55,79",
-  "185,146,164",
-  "131,108,116",
-  "125,115,122",
-  "20,28,79",
-  "6,14,66",
-  "137,154,174",
-  "150,137,120",
-  "28,63,95",
-  "130,92,47",
-  "166,143,137",
-  "169,133,85",
-  "89,114,82",
-  "25,64,69",
-  "168,138,112",
-  "13,42,72",
-  "126,68,54",
-  "129,149,173",
-  "126,68,54",
-  "160,162,161",
-  "138,157,163",
-  "108,125,132",
-  "18,53,10",
-  "56,76,60",
-  "38,81,125",
-  "90,46,46",
-  "75,0,15",
-  "141,32,54",
-  "23,26,48",
-  "22,46,17",
-  "97,47,16",
-  "53,16,64",
-  "126,19,27",
-  "43,19,17",
-  "12,15,102",
-];
 const FONTS = ["serif", "sans"];
 const TEXT_COLORS = { LIGHT: "light", DARK: "dark" };
 
@@ -119,17 +71,27 @@ const bookThickness = (pages) => {
 const bookLengthPages = (characters) => {
   return Math.floor(characters / APPROX_CHAR_PER_PAGE);
 };
+const randomIntRange = (min, max) => {
+  return Math.floor((max - min) * Math.random() + min);
+};
+
+const MIN_SAT = 5;
+const MAX_SAT = 50;
+const MIN_LIGHT = 8;
+const MAX_LIGHT = 60;
+const LIGHT_TEXT_THRESH = 55;
 
 const randomColor = () => {
-  let colorIndex =
-    Math.floor(Math.random() * (LIGHT_COLORS.length + DARK_COLORS.length)) - 1;
-  if (colorIndex === -1) {
-    colorIndex = 0;
+  let h = randomIntRange(0, 360);
+  let s = randomIntRange(MIN_SAT, MAX_SAT);
+  let l = randomIntRange(MIN_LIGHT, MAX_LIGHT);
+  let text;
+  if (l < 50) {
+    text = TEXT_COLORS.LIGHT;
+  } else {
+    text = TEXT_COLORS.DARK;
   }
-
-  return colorIndex < DARK_COLORS.length
-    ? [DARK_COLORS[colorIndex], TEXT_COLORS.LIGHT]
-    : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
+  return [`${h},${s}%,${l}%`, text];
 };
 
 const abbreviateTitle = (title) => {
