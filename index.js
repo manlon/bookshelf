@@ -541,16 +541,17 @@ const BookDetail = (dt, dd) => {
 const Book = (book, selected, focused, moving, i) => {
   return `
     <li style="
-            background: rgb(${book.backgroundColor});
+            --book-color: ${book.backgroundColor};
+            background: rgb(var(--book-color));
             background: linear-gradient(
                 90deg,
-                rgba(${book.backgroundColor},1) 0%,
-                rgba(${book.backgroundColor},0.9) 10%,
-                rgba(${book.backgroundColor},0.9) 70%,
-                rgba(${book.backgroundColor},0.8) 99%,
-                rgba(${book.backgroundColor},1) 100%
+                rgba(var(--book-color),1) 0%,
+                rgba(var(--book-color),0.9) 10%,
+                rgba(var(--book-color),0.9) 70%,
+                rgba(var(--book-color),0.8) 99%,
+                rgba(var(--book-color),1) 100%
             );
-            border: 0 solid rgba(${book.backgroundColor});
+            border: 0 solid rgba(var(--book-color));
             color: ${book.textColor};
             height: ${book.height}px;
             line-height: ${book.thickness}px;
@@ -651,7 +652,7 @@ function initSortable() {
     });
     document
       .querySelector(`li.book[data-index="${bookIdx}"`)
-      .setAttribute("data-selected", '');
+      .setAttribute("data-selected", "");
   });
   sortable.on("sortable:stop", (e) => {
     let oldIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
