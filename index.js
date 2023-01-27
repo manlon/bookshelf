@@ -1,102 +1,68 @@
-const Draggable = require("@shopify/draggable");
+import { Sortable } from "@shopify/draggable";
+import BOOKS from "./plucked-classics.json";
 
 const FONTS = ["serif", "sans"];
 const TEXT_COLORS = { LIGHT: "light", DARK: "dark" };
-
 const COVER_THICKNESS = 12;
-const PAGE_THICKNESS = 2 / 3 / 10;
+const PAGE_THICKNESS = 0.0667;
 const MAX_THICKNESS = 80;
-
 const MIN_HEIGHT = 100;
 const MAX_HEIGHT = 145;
-
 const APPROX_CHAR_PER_PAGE = 1277;
-
 const TOTAL_BOOKS = 47;
-
 const SHELF_WIDTH = 660;
-
-const flipCoin = () => {
-  return Math.floor(Math.random() * 2);
-};
-
-/**
- *
- * SETUP
- *
- **/
-const loadData = (totalBooks) => {
-  const data = require("./plucked-classics.json");
-
-  return getRandomBooks(data, totalBooks).map(assignCosmeticAttributes);
-};
-
-const getRandomBooks = (books, n) => {
-  let result = new Array(n),
-    len = books.length,
-    taken = new Array(len);
-  if (n > len) {
-    throw new RangeError("getRandom: more elements taken than available");
-  }
-  while (n--) {
-    const x = Math.floor(Math.random() * len);
-    result[n] = books[x in taken ? taken[x] : x];
-    taken[x] = --len in taken ? taken[len] : len;
-  }
-  return result;
-};
-
-const sortByRank = (a, b) => {
-  return a.rank - b.rank;
-};
-
-const bookHeightLimitOverMinimum = (pages) => {
-  return (pages / (MAX_HEIGHT - MIN_HEIGHT)) * 2;
-};
-
-const bookHeight = (pages) => {
-  return Math.min(
-    MAX_HEIGHT,
-    MIN_HEIGHT + Math.floor(Math.random() * bookHeightLimitOverMinimum(pages))
-  );
-};
-
-const bookThickness = (pages) => {
-  return Math.min(
-    Math.floor(pages * PAGE_THICKNESS + COVER_THICKNESS),
-    MAX_THICKNESS
-  );
-};
-
-const bookLengthPages = (characters) => {
-  return Math.floor(characters / APPROX_CHAR_PER_PAGE);
-};
-const randomIntRange = (min, max) => {
-  return Math.floor((max - min) * Math.random() + min);
-};
-
 const MIN_SAT = 5;
 const MAX_SAT = 50;
 const MIN_LIGHT = 8;
 const MAX_LIGHT = 60;
 const LIGHT_TEXT_THRESH = 55;
 
+function shuffle(array) {
+  let currentIndex = array.length,
+    randomIndex;
+  while (currentIndex != 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+  return array;
+}
+const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
+const choice = (items) => randomSubset(items, 1)[0];
+const randomIntRange = (min, max) =>
+  Math.floor((max - min) * Math.random() + min);
+const clampInt = (val, max) => Math.min(Math.floor(val), max);
+
+/**
+ *
+ * SETUP
+ *
+ **/
+
+const bookPotentialHeight = (pages) =>
+  (pages / (MAX_HEIGHT - MIN_HEIGHT)) * 2 + MIN_HEIGHT;
+
+const bookHeight = (pages) =>
+  clampInt(randomIntRange(MIN_HEIGHT, bookPotentialHeight(pages)), MAX_HEIGHT);
+
+const bookThickness = (pages) =>
+  clampInt(pages * PAGE_THICKNESS + COVER_THICKNESS, MAX_THICKNESS);
+
+const bookLengthPages = (characters) =>
+  Math.floor(characters / APPROX_CHAR_PER_PAGE);
+
 const randomColor = () => {
   let h = randomIntRange(0, 360);
   let s = randomIntRange(MIN_SAT, MAX_SAT);
   let l = randomIntRange(MIN_LIGHT, MAX_LIGHT);
-  let text;
-  if (l < 50) {
-    text = TEXT_COLORS.LIGHT;
-  } else {
-    text = TEXT_COLORS.DARK;
-  }
+  let text = l < LIGHT_TEXT_THRESH ? TEXT_COLORS.LIGHT : TEXT_COLORS.DARK;
   return [`${h},${s}%,${l}%`, text];
 };
 
-const abbreviateTitle = (title) => {
-  return title.split(/[:;]/)[0];
-};
+const abbreviateTitle = (title) => title.split(/[:;]/)[0];
 
 const abbreviateAuthor = (author) => {
   let names = author.replace(/[^a-zA-Z0-9,\ ]/g, "").split(/\ |,/);
@@ -112,36 +78,34 @@ const abbreviateAuthor = (author) => {
     .toUpperCase();
 };
 
-const assignCosmeticAttributes = (book) => {
-  const pages = bookLengthPages(book.characters),
-    height = bookHeight(pages),
-    thickness = bookThickness(pages),
-    abbreviatedTitle = abbreviateTitle(book.title),
-    [backgroundColor, textColor] = randomColor(),
-    font = FONTS[flipCoin()],
-    decoration =
-      abbreviatedTitle.length < 15
-        ? "border-top: 4px double;" +
-          (flipCoin()
-            ? `border-bottom: ${flipCoin() ? "4px double" : "2px solid"};`
-            : "")
-        : "";
-  return Object.assign({}, book, {
-    backgroundColor,
-    textColor,
-    font,
-    pages,
-    height,
-    thickness,
-    abbreviatedTitle,
-    abbreviatedAuthor: abbreviateAuthor(book.author),
-    decoration,
-  });
+const decorate = (shortTitle) => {
+  return shortTitle.length < 15
+    ? "border-top: 4px double;" +
+        choice([`border-bottom: ${choice(["4px double", "2px solid"])};`, ""])
+    : "";
 };
 
-const initialState = (totalBooks = 10) => {
+const assignCosmeticAttributes = (book) => {
+  let [backgroundColor, textColor] = randomColor();
+  let pages = bookLengthPages(book.characters);
+  let abbreviatedTitle = abbreviateTitle(book.title);
   return {
-    books: loadData(totalBooks),
+    ...book,
+    pages,
+    abbreviatedTitle,
+    backgroundColor,
+    textColor,
+    height: bookHeight(pages),
+    thickness: bookThickness(pages),
+    abbreviatedAuthor: abbreviateAuthor(book.author),
+    font: choice(FONTS),
+    decoration: decorate(abbreviatedTitle),
+  };
+};
+
+const initialState = (totalBooks) => {
+  return {
+    books: randomSubset(BOOKS, totalBooks).map(assignCosmeticAttributes),
     focused: 0,
     selected: null,
     mode: MODES.DEFAULT,
@@ -570,12 +534,9 @@ function initSortable() {
   if (sortable) {
     sortable.destroy();
   }
-  sortable = new Draggable.Sortable(
-    document.querySelectorAll("ul.book-shelf"),
-    {
-      draggable: "li.book",
-    }
-  );
+  sortable = new Sortable(document.querySelectorAll("ul.book-shelf"), {
+    draggable: "li.book",
+  });
   sortable.on("sortable:start", (e) => {
     let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
     let book = application.changeSelection(bookIdx);
