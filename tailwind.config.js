@@ -1,8 +1,49 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['index.html', 'index.js'],
+  content: ["index.html", "index.js"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        "book-serif": [
+          "Palatino Linotype",
+          "Palatino",
+          "Palladio",
+          "URW Palladio L",
+          "Book Antiqua",
+          "Baskerville",
+          "Bookman Old Style",
+          "Bitstream Charter",
+          "Nimbus Roman No9 L",
+          "Garamond",
+          "Apple Garamond",
+          "ITC Garamond Narrow",
+          "New Century Schoolbook",
+          "Century Schoolbook",
+          "Century Schoolbook L",
+          "Georgia",
+          "serif",
+        ],
+        "book-sans": [
+          "Frutiger",
+          "Frutiger Linotype",
+          "Univers",
+          "Calibri",
+          "Gill Sans",
+          "Gill Sans MT",
+          "Myriad Pro",
+          "Myriad",
+          "DejaVu Sans Condensed",
+          "Liberation Sans",
+          "Nimbus Sans L",
+          "Tahoma",
+          "Geneva",
+          "Helvetica Neue",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
+      },
+    },
   },
   plugins: [],
-}
+};

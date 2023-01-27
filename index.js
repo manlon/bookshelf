@@ -48,7 +48,7 @@ const DARK_COLORS = [
   "43,19,17",
   "12,15,102",
 ];
-const FONTS = ["serif", "sans-serif"];
+const FONTS = ["font-book-serif", "font-book-sans"];
 
 const COVER_THICKNESS = 12;
 const PAGE_THICKNESS = 2 / 3 / 10;
@@ -569,22 +569,23 @@ const Book = (book, selected, focused, moving, i) => {
                text-center
                whitespace-nowrap
                z-[2]
-               [&.selected]:outline
-               [&.selected]:outline-2
-               [&.selected]:outline-[#6dd5ed]
-               [&.selected]:outline-offset-2
-               [&.selected]:z-[3]
-               [&.focused]:bottom-[-4px]
-               [&.focused]:[overflow:visible]
-               [&.focused]:[transform:rotateX(-15deg)]
-               [&.focused]:z-[1]
+               data-[selected]:outline
+               data-[selected]:outline-2
+               data-[selected]:outline-[#6dd5ed]
+               data-[selected]:outline-offset-2
+               data-[selected]:z-[3]
+               data-[focused]:bottom-[-4px]
+               data-[focused]:[overflow:visible]
+               data-[focused]:[transform:rotateX(-15deg)]
+               data-[focused]:z-[1]
                [.book.focused+&.book]:z-0
                ${book.font}
-               ${selected === i ? "selected" : ""}
-               ${moving && selected === i ? "moving" : ""}
-               ${focused === i ? "focused" : ""}"
-        title="${book.title}" data-index="${i}">
-
+        title="${book.title}"
+        data-index="${i}"
+        ${selected === i ? "data-selected" : ""}
+        ${moving && selected === i ? "data-moving" : ""}
+        ${focused === i ? "data-focused" : ""}
+        >
         <span class="title bottom-[27px] block left-0 truncate pt-[2px] absolute right-0 top-[8px] align-middle [writing-mode:vertical-lr]"
               style="${book.decoration}">
             ${book.abbreviatedTitle}
@@ -646,11 +647,11 @@ function initSortable() {
     let book = application.changeSelection(bookIdx);
     document.querySelector("aside.selected-book").outerHTML = BookDetails(book);
     Array.from(document.querySelectorAll("li.book")).forEach(function (el) {
-      el.classList.remove("focused");
+      el.removeAttribute("data-focused");
     });
     document
       .querySelector(`li.book[data-index="${bookIdx}"`)
-      .classList.add("selected");
+      .setAttribute("data-selected", '');
   });
   sortable.on("sortable:stop", (e) => {
     let oldIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);

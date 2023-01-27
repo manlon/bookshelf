@@ -2,48 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    font-family: 
-        "Palatino Linotype",
-        Palatino, 
-        Palladio, 
-        "URW Palladio L",
-        "Book Antiqua",
-        Baskerville,
-        "Bookman Old Style",
-        "Bitstream Charter",
-        "Nimbus Roman No9 L",
-        Garamond,
-        "Apple Garamond",
-        "ITC Garamond Narrow",
-        "New Century Schoolbook",
-        "Century Schoolbook",
-        "Century Schoolbook L",
-        Georgia, serif;
-}
-.book.serif {
-    font-family: inherit;
-}
-.book.sans-serif {
-    font-family:
-        Frutiger,
-        'Frutiger Linotype',
-        Univers,
-        Calibri,
-        'Gill Sans',
-        'Gill Sans MT',
-        'Myriad Pro',
-        Myriad,
-        'DejaVu Sans Condensed',
-        'Liberation Sans',
-        'Nimbus Sans L',
-        Tahoma,
-        Geneva,
-        'Helvetica Neue',
-        Helvetica,
-        Arial,
-        sans-serif;
-}
 
 .book::before {
     background: #fff;
@@ -61,10 +19,10 @@ body {
     width: calc(100% - 4px);
     z-index: 3;
   }
-  .book.focused::before {
+  .book[data-focused]::before {
     display: block;
   }
-  .book.focused::after {
+  .book[data-focused]::after {
     background: radial-gradient(circle at top, #6dd5ed, transparent);
     border-radius: 0 0 8px 8px;
     bottom: -13px;

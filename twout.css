@@ -747,6 +747,14 @@ video {
   vertical-align: middle;
 }
 
+.font-book-serif {
+  font-family: Palatino Linotype, Palatino, Palladio, URW Palladio L, Book Antiqua, Baskerville, Bookman Old Style, Bitstream Charter, Nimbus Roman No9 L, Garamond, Apple Garamond, ITC Garamond Narrow, New Century Schoolbook, Century Schoolbook, Century Schoolbook L, Georgia, serif;
+}
+
+.font-book-sans {
+  font-family: Frutiger, Frutiger Linotype, Univers, Calibri, Gill Sans, Gill Sans MT, Myriad Pro, Myriad, DejaVu Sans Condensed, Liberation Sans, Nimbus Sans L, Tahoma, Geneva, Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -778,51 +786,6 @@ video {
   writing-mode: vertical-lr;
 }
 
-body {
-  font-family: 
-        "Palatino Linotype",
-        Palatino, 
-        Palladio, 
-        "URW Palladio L",
-        "Book Antiqua",
-        Baskerville,
-        "Bookman Old Style",
-        "Bitstream Charter",
-        "Nimbus Roman No9 L",
-        Garamond,
-        "Apple Garamond",
-        "ITC Garamond Narrow",
-        "New Century Schoolbook",
-        "Century Schoolbook",
-        "Century Schoolbook L",
-        Georgia, serif;
-}
-
-.book.serif {
-  font-family: inherit;
-}
-
-.book.sans-serif {
-  font-family:
-        Frutiger,
-        'Frutiger Linotype',
-        Univers,
-        Calibri,
-        'Gill Sans',
-        'Gill Sans MT',
-        'Myriad Pro',
-        Myriad,
-        'DejaVu Sans Condensed',
-        'Liberation Sans',
-        'Nimbus Sans L',
-        Tahoma,
-        Geneva,
-        'Helvetica Neue',
-        Helvetica,
-        Arial,
-        sans-serif;
-}
-
 .book::before {
   background: #fff;
   border-width: 0 2px 2px;
@@ -840,11 +803,11 @@ body {
   z-index: 3;
 }
 
-.book.focused::before {
+.book[data-focused]::before {
   display: block;
 }
 
-.book.focused::after {
+.book[data-focused]::after {
   background: radial-gradient(circle at top, #6dd5ed, transparent);
   border-radius: 0 0 8px 8px;
   bottom: -13px;
@@ -891,39 +854,39 @@ body {
   width: 50%;
 }
 
-.\[\&\.selected\]\:z-\[3\].selected {
-  z-index: 3;
-}
-
-.\[\&\.selected\]\:outline.selected {
-  outline-style: solid;
-}
-
-.\[\&\.selected\]\:outline-2.selected {
-  outline-width: 2px;
-}
-
-.\[\&\.selected\]\:outline-offset-2.selected {
-  outline-offset: 2px;
-}
-
-.\[\&\.selected\]\:outline-\[\#6dd5ed\].selected {
-  outline-color: #6dd5ed;
-}
-
-.\[\&\.focused\]\:bottom-\[-4px\].focused {
+.data-\[focused\]\:bottom-\[-4px\][data-focused] {
   bottom: -4px;
 }
 
-.\[\&\.focused\]\:z-\[1\].focused {
+.data-\[selected\]\:z-\[3\][data-selected] {
+  z-index: 3;
+}
+
+.data-\[focused\]\:z-\[1\][data-focused] {
   z-index: 1;
 }
 
-.\[\&\.focused\]\:\[overflow\:visible\].focused {
+.data-\[selected\]\:outline[data-selected] {
+  outline-style: solid;
+}
+
+.data-\[selected\]\:outline-2[data-selected] {
+  outline-width: 2px;
+}
+
+.data-\[selected\]\:outline-offset-2[data-selected] {
+  outline-offset: 2px;
+}
+
+.data-\[selected\]\:outline-\[\#6dd5ed\][data-selected] {
+  outline-color: #6dd5ed;
+}
+
+.data-\[focused\]\:\[overflow\:visible\][data-focused] {
   overflow: visible;
 }
 
-.\[\&\.focused\]\:\[transform\:rotateX\(-15deg\)\].focused {
+.data-\[focused\]\:\[transform\:rotateX\(-15deg\)\][data-focused] {
   transform: rotateX(-15deg);
 }
 
