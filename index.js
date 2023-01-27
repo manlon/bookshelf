@@ -451,8 +451,8 @@ const BookDetails = (book) => {
   ];
   return `
      <aside class="selected-book p-0 relative h-[268px] w-[400px]">
-        <dl class="book-details blook h-full m-0 pt-[24px] px-[8px] relative"
-            style="border-color: rgb(${book.backgroundColor});">
+        <dl class="book-details blook h-full m-0 pt-[24px] px-[8px] relative border-book-color"
+            style="--book-color: ${book.backgroundColor};">
           ${deets.map(([dt, dd]) => BookDetail(dt, dd)).join("")}
         </dl>
     </aside>`;

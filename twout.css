@@ -665,6 +665,10 @@ video {
   border-color: rgb(97 60 0 / var(--tw-border-opacity));
 }
 
+.border-book-color {
+  border-color: hsl(var(--book-color));
+}
+
 .bg-\[\#eaeaea\] {
   --tw-bg-opacity: 1;
   background-color: rgb(234 234 234 / var(--tw-bg-opacity));
