@@ -549,10 +549,6 @@ video {
   z-index: 1;
 }
 
-.z-\[2\] {
-  z-index: 2;
-}
-
 .float-right {
   float: right;
 }
@@ -587,10 +583,6 @@ video {
 
 .mt-3 {
   margin-top: 0.75rem;
-}
-
-.box-content {
-  box-sizing: content-box;
 }
 
 .block {
@@ -641,10 +633,6 @@ video {
   min-width: 1200px;
 }
 
-.cursor-pointer {
-  cursor: pointer;
-}
-
 .list-disc {
   list-style-type: disc;
 }
@@ -657,24 +645,6 @@ video {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.whitespace-nowrap {
-  white-space: nowrap;
-}
-
-.rounded-t-sm {
-  border-top-left-radius: 0.125rem;
-  border-top-right-radius: 0.125rem;
-}
-
-.rounded-b-\[1px\] {
-  border-bottom-right-radius: 1px;
-  border-bottom-left-radius: 1px;
-}
-
-.border {
-  border-width: 1px;
 }
 
 .border-x-\[10px\] {
@@ -713,26 +683,8 @@ video {
   padding-right: 8px;
 }
 
-.px-0\.5 {
-  padding-left: 0.125rem;
-  padding-right: 0.125rem;
-}
-
-.px-0 {
-  padding-left: 0px;
-  padding-right: 0px;
-}
-
 .pt-\[24px\] {
   padding-top: 24px;
-}
-
-.pt-2 {
-  padding-top: 0.5rem;
-}
-
-.pb-6 {
-  padding-bottom: 1.5rem;
 }
 
 .pt-\[2px\] {
@@ -772,10 +724,6 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.\[overflow\:hidden\] {
-  overflow: hidden;
 }
 
 .\[writing-mode\:vertical-lr\] {
@@ -926,44 +874,4 @@ video {
   position: absolute;
   top: 1px;
   width: 50%;
-}
-
-.\[\&\.selected\]\:z-\[3\].selected {
-  z-index: 3;
-}
-
-.\[\&\.selected\]\:outline.selected {
-  outline-style: solid;
-}
-
-.\[\&\.selected\]\:outline-2.selected {
-  outline-width: 2px;
-}
-
-.\[\&\.selected\]\:outline-offset-2.selected {
-  outline-offset: 2px;
-}
-
-.\[\&\.selected\]\:outline-\[\#6dd5ed\].selected {
-  outline-color: #6dd5ed;
-}
-
-.\[\&\.focused\]\:bottom-\[-4px\].focused {
-  bottom: -4px;
-}
-
-.\[\&\.focused\]\:z-\[1\].focused {
-  z-index: 1;
-}
-
-.\[\&\.focused\]\:\[overflow\:visible\].focused {
-  overflow: visible;
-}
-
-.\[\&\.focused\]\:\[transform\:rotateX\(-15deg\)\].focused {
-  transform: rotateX(-15deg);
-}
-
-.book.focused+.\[\.book\.focused\+\&\.book\]\:z-0.book {
-  z-index: 0;
 }
