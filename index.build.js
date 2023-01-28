@@ -588,11 +588,11 @@
                 [onSortableSort]({ dragEvent }) {
                   const { sourceContainer } = dragEvent;
                   const elements = this.draggable.getDraggableElementsForContainer(sourceContainer);
-                  this.lastElements = Array.from(elements).map((el) => {
+                  this.lastElements = Array.from(elements).map((el2) => {
                     return {
-                      domEl: el,
-                      offsetTop: el.offsetTop,
-                      offsetLeft: el.offsetLeft
+                      domEl: el2,
+                      offsetTop: el2.offsetTop,
+                      offsetLeft: el2.offsetLeft
                     };
                   });
                 }
@@ -5748,92 +5748,18 @@
     MOVE_BOOK: "moveBook",
     REGISTER_MULTIPLIER: "registerMultiplier"
   };
-  var DIRECTIONAL_KEYS = [
-    "h",
-    "j",
-    "k",
-    "l",
-    "i",
-    ";",
-    "ArrowLeft",
-    "ArrowRight",
-    "ArrowUp",
-    "ArrowDown"
-  ];
-  var directionFromKey = (key) => {
-    switch (key) {
-      case "ArrowLeft":
-      case "h":
-      case "j":
-        return "l";
-      case "ArrowRight":
-      case "l":
-      case ";":
-        return "r";
-      case "ArrowUp":
-      case "i":
-        return "u";
-      case "ArrowDown":
-      case "k":
-        return "k";
-      default:
-        return null;
-    }
-  };
-  var enterDefaultMode = function() {
-    this.present({
-      name: STATE_ACTIONS.ENTER_DEFAULT_MODE
-    });
-  };
-  var moveCursor = function(direction) {
-    this.present({
-      name: STATE_ACTIONS.MOVE_CURSOR,
-      data: direction
-    });
-  };
-  var enterMovingMode = function() {
-    this.present({
-      name: STATE_ACTIONS.ENTER_MOVING_MODE
-    });
-  };
-  var moveBook = function(direction) {
-    this.present({
-      name: STATE_ACTIONS.MOVE_BOOK,
-      data: direction
-    });
-  };
-  var registerMultiplier = function(multiplier) {
-    this.present({
-      name: STATE_ACTIONS.REGISTER_MULTIPLIER,
-      data: multiplier
-    });
-  };
-  var handleKeyDown = function(e) {
-    if (e.key === " ") {
-      e.preventDefault();
-    }
-    this.present({
-      name: USER_ACTIONS.KEY_DOWN,
-      data: e.key
-    });
-  };
-  var handleKeyUp = function(e) {
-    if (e.key === " ") {
-      e.preventDefault();
-    }
-    this.present({
-      name: USER_ACTIONS.KEY_UP,
-      data: e.key
-    });
-  };
-  var handleBookClick = function(e, el) {
-    e.preventDefault();
-    const index = parseInt(el.dataset.index);
-    this.present({
-      name: USER_ACTIONS.CLICK_BOOK,
-      data: index
-    });
-  };
+  var DIRECTIONAL_KEYS = /* @__PURE__ */ new Map([
+    ["h", "l"],
+    ["j", "l"],
+    ["k", "k"],
+    ["l", "r"],
+    ["i", "u"],
+    [";", "r"],
+    ["ArrowLeft", "l"],
+    ["ArrowRight", "r"],
+    ["ArrowUp", "u"],
+    ["ArrowDown", "k"]
+  ]);
   var ApplicationState = class {
     constructor(initialData, renderFn) {
       this._data = initialData;
@@ -5861,26 +5787,37 @@
       let direction;
       if (state.mode === MODES.MOVING) {
         if (state.key >= 1 && state.key <= 9) {
-          registerMultiplier.bind(this)(state.key);
+          this.present({
+            name: STATE_ACTIONS.REGISTER_MULTIPLIER,
+            data: state.key
+          });
           return true;
         } else if (state.key === " ") {
-          enterDefaultMode.bind(this)();
+          this.present({
+            name: STATE_ACTIONS.ENTER_DEFAULT_MODE
+          });
           return true;
-        } else if (DIRECTIONAL_KEYS.includes(state.key)) {
-          direction = directionFromKey(state.key);
-          moveBook.bind(this)(direction);
+        } else if (direction = DIRECTIONAL_KEYS.get(state.key)) {
+          this.present({
+            name: STATE_ACTIONS.MOVE_BOOK,
+            data: direction
+          });
           return true;
         }
       } else if (state.mode === MODES.DEFAULT) {
         if (state.key === "enter") {
           enterViewingMode.bind(this)();
           return true;
-        } else if (DIRECTIONAL_KEYS.includes(state.key)) {
-          direction = directionFromKey(state.key);
-          moveCursor.bind(this)(direction);
+        } else if (direction = DIRECTIONAL_KEYS.get(state.key)) {
+          this.present({
+            name: STATE_ACTIONS.MOVE_CURSOR,
+            data: direction
+          });
           return true;
         } else if (state.key === " ") {
-          enterMovingMode.bind(this)();
+          this.present({
+            name: STATE_ACTIONS.ENTER_MOVING_MODE
+          });
           return true;
         }
       }
@@ -6060,12 +5997,22 @@
     initSortable();
   };
   var attachEventHandlers = (app) => {
-    window.addEventListener("keydown", handleKeyDown.bind(app), false);
-    window.addEventListener("keyup", handleKeyUp.bind(app), false);
+    window.addEventListener("keydown", (e) => {
+      if (e.key === " ")
+        e.preventDefault();
+      app.present({ name: USER_ACTIONS.KEY_DOWN, data: e.key });
+    });
+    window.addEventListener("keyup", (e) => {
+      if (e.key === " ")
+        e.preventDefault();
+      app.present({ name: USER_ACTIONS.KEY_UP, data: e.key });
+    });
     document.getElementById("app").addEventListener("click", (e) => {
       let bookEl = e.target.closest("li.book");
       if (bookEl) {
-        handleBookClick.bind(app)(e, bookEl);
+        e.preventDefault();
+        const index = parseInt(el.dataset.index);
+        app.present({ name: USER_ACTIONS.CLICK_BOOK, data: index });
       }
     });
   };
@@ -6086,8 +6033,8 @@
       let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
       let book = application.changeSelection(bookIdx);
       document.querySelector("aside.selected-book").outerHTML = BookDetails(book);
-      Array.from(document.querySelectorAll("li.book")).forEach(function(el) {
-        el.removeAttribute("data-focused");
+      Array.from(document.querySelectorAll("li.book")).forEach(function(el2) {
+        el2.removeAttribute("data-focused");
       });
       document.querySelector(`li.book[data-index="${bookIdx}"`).setAttribute("data-selected", "");
     });
