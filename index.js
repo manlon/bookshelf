@@ -450,8 +450,10 @@ const BookDetails = (book) => {
     ["Pages", `${book.pages}pp.`],
   ];
   return `
-     <aside class="selected-book p-0 relative h-[268px] w-[400px]">
-        <dl class="book-details blook h-full m-0 pt-[24px] px-[8px] relative border-book-color"
+     <aside class="selected-book p-0 h-[268px] w-[400px] border-2">
+        <dl class="book-details grid grid-cols-2 grid-rows-[1fr_2fr]
+                   h-full pt-[24px] px-[8px] relative border-book-color
+                   leading-none"
             style="--book-color: ${book.backgroundColor};">
           ${deets.map(([dt, dd]) => BookDetail(dt, dd)).join("")}
         </dl>
@@ -460,8 +462,8 @@ const BookDetails = (book) => {
 
 const BookDetail = (dt, dd) => {
   return `
-    <dt class="text-white font-bold float-left clear-left relative w-[54%] z-[1]">${dt}</dt>
-    <dd class="m-0 float-left relative text-center w-[46%] z-[1]">${dd}</dd>
+    <dt class="invisible">${dt}</dt>
+    <dd class="text-center relative z-[1] pb-1">${dd}</dd>
   `;
 };
 
