@@ -112,7 +112,7 @@ class Book {
   }
   get spinePattern() {
     return (this._pattern ??= weightedChoice([
-      ["", 1],
+      ["", 0.5],
       ["2", 0.3],
       ["3", 0.2],
     ]));
