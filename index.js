@@ -34,7 +34,6 @@ function shuffle(array) {
   return array;
 }
 const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
-const choice = (items) => randomSubset(items, 1)[0];
 const weightedChoice = (itemsWithWeights) => {
   let thresh = Math.random() * itemsWithWeights.map(([a, b]) => b).reduce((a, b) => a + b);
   return itemsWithWeights.reduce(
@@ -104,10 +103,10 @@ class Book {
     return (this._deco ??=
       this.abbreviatedTitle.length < 15
         ? weightedChoice([
-            ["border-top: 4px double;", 0.5],
-            ["border-top: 4px double; border-bottom: 4px double;", 0.25],
-            ["border-top: 4px double; border-bottom: 2px solid;", 0.25],
-            ["border-top: 4px groove; border-bottom: 4px ridge;", 0.25],
+            ["top-double", 0.5],
+            ["double", 0.25],
+            ["double-solid", 0.25],
+            ["ridge", 0.25],
           ])
         : "");
   }
@@ -315,8 +314,10 @@ const Components = {
         data-text-color="${book.textColor}"
         data-font="${book.font}"
         >
-        <span class="title bottom-[27px] block left-0 truncate pt-1 absolute right-0 top-[8px] align-middle [writing-mode:vertical-lr]"
-              style="${book.decoration}">
+        <span class="title block absolute top-[8px] bottom-[27px] left-0 right-0
+                     pt-1 align-middle truncate [writing-mode:vertical-lr]
+                     title-spine-decoration"
+              data-spine-decoration="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
         <span class="author bottom-[8px] block left-0 leading-4 truncate absolute right-0 text-center">${

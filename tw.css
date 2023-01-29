@@ -40,6 +40,19 @@
          leading-[var(--book-thickness)];
 }
 
+.title-spine-decoration {
+  @apply data-[spine-decoration='top-double']:[border-top:4px_double]
+
+         data-[spine-decoration='double']:[border-top:4px_double]
+         data-[spine-decoration='double']:[border-bottom:4px_double]
+
+         data-[spine-decoration='double-solid']:[border-top:4px_double]
+         data-[spine-decoration='double-solid']:[border-bottom:2px_solid]
+
+         data-[spine-decoration='ridge']:[border-top:4px_groove]
+         data-[spine-decoration='ridge']:[border-bottom:4px_ridge];
+}
+
 .book::before {
   background: #fff;
   border-width: 0 2px 2px;

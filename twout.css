@@ -533,6 +533,10 @@ video {
   top: 18rem;
 }
 
+.top-\[8px\] {
+  top: 8px;
+}
+
 .bottom-\[27px\] {
   bottom: 27px;
 }
@@ -543,10 +547,6 @@ video {
 
 .right-0 {
   right: 0px;
-}
-
-.top-\[8px\] {
-  top: 8px;
 }
 
 .bottom-\[8px\] {
@@ -833,6 +833,25 @@ video {
 
 .focused+.book {
   z-index: 0;
+}
+
+.title-spine-decoration[data-spine-decoration='top-double'] {
+  border-top: 4px double;
+}
+
+.title-spine-decoration[data-spine-decoration='double'] {
+  border-top: 4px double;
+  border-bottom: 4px double;
+}
+
+.title-spine-decoration[data-spine-decoration='double-solid'] {
+  border-top: 4px double;
+  border-bottom: 2px solid;
+}
+
+.title-spine-decoration[data-spine-decoration='ridge'] {
+  border-top: 4px groove;
+  border-bottom: 4px ridge;
 }
 
 .book::before {
