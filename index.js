@@ -197,7 +197,7 @@ class ApplicationState {
 
   changeSelection(idx) {
     this.selected = idx;
-    if (idx) {
+    if (idx != null) {
       let book = this.books[idx];
       return book;
     } else {
