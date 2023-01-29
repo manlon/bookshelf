@@ -57,6 +57,7 @@ class Book {
   }
   constructor({ title, author, characters, year }) {
     Object.assign(this, { title, author, characters, year });
+    this.id = randomIntRange(0, 100000000);
     this.font = choice(FONTS);
     [this.backgroundColor, this.textColor] = randomColor();
   }
@@ -237,11 +238,13 @@ const Components = {
       ${chunks
         .map(([books, offset]) => Components.BookShelf(books, offset, selected, focused, isMoving))
         .join("")}
-      </div>${
+      </div>
+      ${
         selected !== null || focused !== null
           ? Components.BookDetails(books[selected] || books[focused])
           : ""
-    }</div>`;
+      }
+    </div>`;
   },
 
   BookShelf: (books, offset, selected, focused, moving) => {
@@ -287,6 +290,7 @@ const Components = {
             --book-thickness: ${book.thickness}px;
             "
         class="book"
+        id="book-${book.id}"
         title="${book.title}"
         data-index="${i}"
         ${selected === i ? "data-selected" : ""}
