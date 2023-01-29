@@ -33,6 +33,8 @@
          data-[text-color='dark']:text-gray-600
          data-[font='serif']:font-book-serif
          data-[font='sans']:font-book-sans
+         data-[font='cursive']:font-book-cursive
+         data-[font='fantasy']:font-book-fantasy
          h-[var(--book-height)]
          w-[var(--book-thickness)]
          leading-[var(--book-thickness)];

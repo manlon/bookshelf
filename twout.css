@@ -801,6 +801,14 @@ video {
   font-family: Frutiger, Frutiger Linotype, Univers, Calibri, Gill Sans, Gill Sans MT, Myriad Pro, Myriad, DejaVu Sans Condensed, Liberation Sans, Nimbus Sans L, Tahoma, Geneva, Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
+.book[data-font='cursive'] {
+  font-family: Snell Roundhand, Apple Chancery, Brush Script MT, cursive;
+}
+
+.book[data-font='fantasy'] {
+  font-family: Luminari, Trattatello, Chalkduster, fantasy;
+}
+
 .book[data-text-color='light'] {
   --tw-text-opacity: 1;
   color: rgb(243 244 246 / var(--tw-text-opacity));

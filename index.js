@@ -2,7 +2,12 @@ import { Sortable } from "@shopify/draggable";
 import BOOKS from "./plucked-classics.json";
 import morphdom from "morphdom";
 
-const FONTS = ["serif", "sans"];
+const FONTS = [
+  ["serif", 2],
+  ["sans", 2],
+  ["cursive", 0.5],
+  ["fantasy", 0.25],
+];
 const TEXT_COLORS = { LIGHT: "light", DARK: "dark" };
 const COVER_THICKNESS = 12;
 const PAGE_THICKNESS = 0.0667;
@@ -30,6 +35,13 @@ function shuffle(array) {
 }
 const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
 const choice = (items) => randomSubset(items, 1)[0];
+const weightedChoice = (itemsWithWeights) => {
+  let thresh = Math.random() * itemsWithWeights.map(([a, b]) => b).reduce((a, b) => a + b);
+  return itemsWithWeights.reduce(
+    ([best, sum], [item, wt]) => (sum < thresh ? [item, sum + wt] : [best, sum]),
+    [null, 0]
+  )[0];
+};
 const randomIntRange = (min, max) => Math.floor((max - min) * Math.random() + min);
 const clampInt = (val, max, min = 0) => {
   [min, max] = new Int32Array([min, max]).sort();
@@ -58,7 +70,7 @@ class Book {
   constructor({ title, author, characters, year }) {
     Object.assign(this, { title, author, characters, year });
     this.id = randomIntRange(0, 100000000);
-    this.font = choice(FONTS);
+    this.font = weightedChoice(FONTS);
     [this.backgroundColor, this.textColor] = randomColor();
   }
   get pages() {
@@ -219,7 +231,6 @@ class ApplicationState {
 
 const Components = {
   BookList: ({ books, selected, focused, isMoving }) => {
-    let shelfWidth = 0;
     let [chunks, _] = books.reduce(
       ([chunks, width], book, i) => {
         if (book.thickness + width >= SHELF_WIDTH) {
@@ -358,7 +369,7 @@ function initSortable() {
     let oldIdx = parseInt(el.dataset.index, 10);
     let newIdx;
     if (el.previousElementSibling) {
-      let sibIdx = parseInt(el.previousElementSibling.dataset.index,10);
+      let sibIdx = parseInt(el.previousElementSibling.dataset.index, 10);
       newIdx = sibIdx > oldIdx ? sibIdx : sibIdx + 1;
     } else {
       let shelf = e.data.dragEvent.source.parentNode;

@@ -55,6 +55,8 @@ module.exports = {
           "Arial",
           "sans-serif",
         ],
+        "book-cursive": ["Snell Roundhand", "Apple Chancery", "Brush Script MT", "cursive"],
+        "book-fantasy": ["Luminari", "Trattatello", "Chalkduster", "fantasy"],
       },
     },
   },
