@@ -368,4 +368,3 @@ function initSortable() {
 
 const application = new ApplicationState(NUM_BOOKS, render).render();
 attachEventHandlers(application);
-initSortable();
