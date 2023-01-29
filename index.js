@@ -1,5 +1,6 @@
 import { Sortable } from "@shopify/draggable";
 import BOOKS from "./plucked-classics.json";
+import morphdom from "morphdom";
 
 const FONTS = ["serif", "sans"];
 const TEXT_COLORS = { LIGHT: "light", DARK: "dark" };
@@ -23,17 +24,13 @@ function shuffle(array) {
   while (currentIndex != 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
   return array;
 }
 const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
 const choice = (items) => randomSubset(items, 1)[0];
-const randomIntRange = (min, max) =>
-  Math.floor((max - min) * Math.random() + min);
+const randomIntRange = (min, max) => Math.floor((max - min) * Math.random() + min);
 const clampInt = (val, max, min = 0) => {
   [min, max] = new Int32Array([min, max]).sort();
   return Math.max(Math.min(Math.floor(val), max), min);
@@ -45,6 +42,14 @@ const randomColor = () => {
   let text = l < LIGHT_TEXT_THRESH ? TEXT_COLORS.LIGHT : TEXT_COLORS.DARK;
   return [`${h},${s}%,${l}%`, text];
 };
+const morph = (el1, el2, options) =>
+  morphdom(el1, el2, {
+    onBeforeElUpdated: function (fromEl, toEl) {
+      if (fromEl.isEqualNode(toEl)) return false;
+      return true;
+    },
+    ...options,
+  });
 
 class Book {
   static randomLibrary(bookData, size) {
@@ -61,10 +66,7 @@ class Book {
   get height() {
     if (this._height) return this._height;
     let potential = (this.pages / (MAX_HEIGHT - MIN_HEIGHT)) * 2 + MIN_HEIGHT;
-    return (this._height = clampInt(
-      randomIntRange(MIN_HEIGHT, potential),
-      MAX_HEIGHT
-    ));
+    return (this._height = clampInt(randomIntRange(MIN_HEIGHT, potential), MAX_HEIGHT));
   }
   get thickness() {
     return (this._thickness ||= clampInt(
@@ -116,6 +118,9 @@ class ApplicationState {
     this.mode = ApplicationState.MODES.DEFAULT;
     this.multiplier = 1;
     this._render = renderFn;
+  }
+  get isMoving() {
+    this.mode == ApplicationState.MODES.DEFAULT;
   }
 
   focusBook(idx) {
@@ -178,21 +183,17 @@ class ApplicationState {
   moveSelectedBook(direction) {
     let dir = direction === "l" ? -1 : 1;
     let oldIdx = this.selected;
-    let newIdx = clampInt(
-      oldIdx + dir * this.multiplier,
-      0,
-      this.books.length - 1
-    );
+    let newIdx = clampInt(oldIdx + dir * this.multiplier, 0, this.books.length - 1);
     this.selected = newIdx;
     this.multiplier = 1;
     this.moveBookToIndex(oldIdx, newIdx);
   }
 
-  moveBookToIndex(oldIdx, newIdx) {
+  moveBookToIndex(oldIdx, newIdx, render = true) {
     let books = this.books;
     let removed = books.splice(oldIdx, 1);
     books.splice(newIdx, 0, ...removed);
-    this.render();
+    if (render) this.render();
   }
 
   changeSelection(idx) {
@@ -205,14 +206,17 @@ class ApplicationState {
     }
   }
 
-  render() {
-    this._render(this);
+  render(cb) {
+    requestAnimationFrame(() => {
+      this._render(this);
+      if (cb) cb();
+    });
     return this;
   }
 }
 
 const Components = {
-  BookList: (books, selected, focused, moving) => {
+  BookList: ({ books, selected, focused, isMoving }) => {
     let shelfWidth = 0;
     let [chunks, _] = books.reduce(
       ([chunks, width], book, i) => {
@@ -228,18 +232,16 @@ const Components = {
       [[[[], 0]], 0]
     );
     return `
-    <div class="book-case border-[#613c00] border-t-[10px] border-x-[10px] float-right w-[770px]">
-    ${chunks
-      .map(([books, offset]) =>
-        Components.BookShelf(books, offset, selected, focused, moving)
-      )
-      .join("")}
-    </div>
-    ${
-      selected !== null || focused !== null
-        ? Components.BookDetails(books[selected] || books[focused])
-        : ""
-    }`;
+    <div class="dummy">
+      <div class="book-case border-[#613c00] border-t-[10px] border-x-[10px] float-right w-[770px]">
+      ${chunks
+        .map(([books, offset]) => Components.BookShelf(books, offset, selected, focused, isMoving))
+        .join("")}
+      </div>${
+        selected !== null || focused !== null
+          ? Components.BookDetails(books[selected] || books[focused])
+          : ""
+    }</div>`;
   },
 
   BookShelf: (books, offset, selected, focused, moving) => {
@@ -247,9 +249,7 @@ const Components = {
     <ul class="book-shelf flex h-[200px] mt-3 mb-4 p-0 items-end border-b-[6px] border-[#613c00]"
         data-book-idx="${offset}">
         ${books
-          .map((book, i) =>
-            Components.Book(book, selected, focused, moving, i + offset)
-          )
+          .map((book, i) => Components.Book(book, selected, focused, moving, i + offset))
           .join("")}
     </ul>`;
   },
@@ -307,13 +307,9 @@ const Components = {
 };
 
 const render = (state) => {
-  document.getElementsByTagName("main")[0].innerHTML = Components.BookList(
-    state.books,
-    state.selected,
-    state.focused,
-    state.mode === ApplicationState.MODES.MOVING
-  );
-  initSortable();
+  morph(document.querySelector("main"), Components.BookList(state), {
+    childrenOnly: true,
+  });
 };
 
 const attachEventHandlers = (app) => {
@@ -329,7 +325,7 @@ const attachEventHandlers = (app) => {
     let bookEl = e.target.closest("li.book");
     if (bookEl) {
       e.preventDefault();
-      const index = parseInt(el.dataset.index);
+      const index = parseInt(bookEl.dataset.index);
       app.focusBook(index);
     }
   });
@@ -346,25 +342,24 @@ function initSortable() {
   sortable.on("sortable:start", (e) => {
     let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
     let book = application.changeSelection(bookIdx);
-    document.querySelector("aside.selected-book").outerHTML =
-      Components.BookDetails(book);
+    morph(document.querySelector("aside.selected-book"), Components.BookDetails(book));
     Array.from(document.querySelectorAll("li.book")).forEach(function (el) {
       el.removeAttribute("data-focused");
     });
-    document
-      .querySelector(`li.book[data-index="${bookIdx}"`)
-      .setAttribute("data-selected", "");
+    document.querySelector(`li.book[data-index="${bookIdx}"`).setAttribute("data-selected", "");
   });
   sortable.on("sortable:stop", (e) => {
     let oldIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
     let shelf = e.data.dragEvent.source.parentNode;
     let shelfIdx = parseInt(shelf.dataset.bookIdx, 10);
     let newIdx = e.data.newIndex + shelfIdx;
-    application.moveBookToIndex(oldIdx, newIdx);
+    application.moveBookToIndex(oldIdx, newIdx, false);
     application.changeSelection(null);
     application.focusBook(newIdx);
   });
 }
 
-const application = new ApplicationState(NUM_BOOKS, render).render();
-attachEventHandlers(application);
+const application = new ApplicationState(NUM_BOOKS, render).render(() => {
+  initSortable();
+  attachEventHandlers(application);
+});
