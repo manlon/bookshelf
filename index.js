@@ -101,10 +101,14 @@ class Book {
       .toUpperCase());
   }
   get decoration() {
-    return (this._deco ||=
+    return (this._deco ??=
       this.abbreviatedTitle.length < 15
-        ? "border-top: 4px double;" +
-          choice([`border-bottom: ${choice(["4px double", "2px solid"])};`, ""])
+        ? weightedChoice([
+            ["border-top: 4px double;", 0.5],
+            ["border-top: 4px double; border-bottom: 4px double;", 0.25],
+            ["border-top: 4px double; border-bottom: 2px solid;", 0.25],
+            ["border-top: 4px groove; border-bottom: 4px ridge;", 0.25],
+          ])
         : "");
   }
 }
@@ -311,7 +315,7 @@ const Components = {
         data-text-color="${book.textColor}"
         data-font="${book.font}"
         >
-        <span class="title bottom-[27px] block left-0 truncate pt-[2px] absolute right-0 top-[8px] align-middle [writing-mode:vertical-lr]"
+        <span class="title bottom-[27px] block left-0 truncate pt-1 absolute right-0 top-[8px] align-middle [writing-mode:vertical-lr]"
               style="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>

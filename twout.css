@@ -703,8 +703,8 @@ video {
   padding-bottom: 0.25rem;
 }
 
-.pt-\[2px\] {
-  padding-top: 2px;
+.pt-1 {
+  padding-top: 0.25rem;
 }
 
 .text-center {
