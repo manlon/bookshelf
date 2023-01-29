@@ -1,4 +1,4 @@
-import { Sortable } from "@shopify/draggable";
+import Sortable from "@shopify/draggable/lib/sortable";
 import BOOKS from "./plucked-classics.json";
 import morphdom from "morphdom";
 
