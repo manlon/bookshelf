@@ -764,14 +764,15 @@ video {
   border-width: 0px;
   border-style: solid;
   border-color: hsl(var(--book-color));
-  background-image: linear-gradient(
-          90deg,
-          hsla(var(--book-color),1) 0%,
-          hsla(var(--book-color),0.9) 10%,
-          hsla(var(--book-color),0.9) 70%,
-          hsla(var(--book-color),0.8) 99%,
-          hsla(var(--book-color),1) 100%
-      );;
+  background-image: 
+          linear-gradient(
+            90deg,
+            hsla(var(--book-color),1) 0%,
+            hsla(var(--book-color),0.9) 10%,
+            hsla(var(--book-color),0.9) 70%,
+            hsla(var(--book-color),0.8) 99%,
+            hsla(var(--book-color),1) 100%
+          );;
   padding-top: 0.5rem;
   padding-bottom: 1.5rem;
   text-align: center;
@@ -791,6 +792,45 @@ video {
 
 .book[data-focused] {
   z-index: 1;
+}
+
+.book[data-spine-pattern='2'] {
+  background-image: 
+          repeating-linear-gradient(
+            36deg,
+            rgba(255,255,255, 0.1),
+            rgba(255,255,255, 0.1)
+            1px,
+            transparent 0px,
+            transparent 2px
+          ),
+          linear-gradient(
+            90deg,
+            hsla(var(--book-color),1) 0%,
+            hsla(var(--book-color),0.9) 10%,
+            hsla(var(--book-color),0.9) 70%,
+            hsla(var(--book-color),0.8) 99%,
+            hsla(var(--book-color),1) 100%
+          );;
+}
+
+.book[data-spine-pattern='3'] {
+  background-image: 
+          repeating-linear-gradient(
+            -45deg,
+            rgba(255,255,255, 0.1),
+            rgba(255,255,255, 0.1) 1px,
+            transparent 1px,
+            transparent 6px
+          ),
+          linear-gradient(
+            90deg,
+            hsla(var(--book-color),1) 0%,
+            hsla(var(--book-color),0.9) 10%,
+            hsla(var(--book-color),0.9) 70%,
+            hsla(var(--book-color),0.8) 99%,
+            hsla(var(--book-color),1) 100%
+          );;
 }
 
 .book[data-font='serif'] {
@@ -829,6 +869,10 @@ video {
 .book[data-focused] {
   overflow: visible;
   transform: rotateX(-15deg);
+}
+
+.book[data-spine-pattern='3'] {
+  background-size: 2px 2px;
 }
 
 .focused+.book {

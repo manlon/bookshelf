@@ -110,6 +110,13 @@ class Book {
           ])
         : "");
   }
+  get spinePattern() {
+    return (this._pattern ??= weightedChoice([
+      ["", 1],
+      ["2", 0.3],
+      ["3", 0.2],
+    ]));
+  }
 }
 
 class ApplicationState {
@@ -136,7 +143,7 @@ class ApplicationState {
     this._render = renderFn;
   }
   get isMoving() {
-    this.mode == ApplicationState.MODES.DEFAULT;
+    return this.mode == ApplicationState.MODES.DEFAULT;
   }
 
   focusBook(idx) {
@@ -313,6 +320,7 @@ const Components = {
         ${focused === i ? "data-focused" : ""}
         data-text-color="${book.textColor}"
         data-font="${book.font}"
+        data-spine-pattern="${book.spinePattern}"
         >
         <span class="title block absolute top-[8px] bottom-[27px] left-0 right-0
                      pt-1 align-middle truncate [writing-mode:vertical-lr]

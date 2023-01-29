@@ -4,14 +4,48 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        "book-gradient": `linear-gradient(
-          90deg,
-          hsla(var(--book-color),1) 0%,
-          hsla(var(--book-color),0.9) 10%,
-          hsla(var(--book-color),0.9) 70%,
-          hsla(var(--book-color),0.8) 99%,
-          hsla(var(--book-color),1) 100%
-      );`,
+        "book-gradient": `
+          linear-gradient(
+            90deg,
+            hsla(var(--book-color),1) 0%,
+            hsla(var(--book-color),0.9) 10%,
+            hsla(var(--book-color),0.9) 70%,
+            hsla(var(--book-color),0.8) 99%,
+            hsla(var(--book-color),1) 100%
+          );`,
+        "book-gradient-2": `
+          repeating-linear-gradient(
+            36deg,
+            rgba(255,255,255, 0.1),
+            rgba(255,255,255, 0.1)
+            1px,
+            transparent 0px,
+            transparent 2px
+          ),
+          linear-gradient(
+            90deg,
+            hsla(var(--book-color),1) 0%,
+            hsla(var(--book-color),0.9) 10%,
+            hsla(var(--book-color),0.9) 70%,
+            hsla(var(--book-color),0.8) 99%,
+            hsla(var(--book-color),1) 100%
+          );`,
+        "book-gradient-3": `
+          repeating-linear-gradient(
+            -45deg,
+            rgba(255,255,255, 0.1),
+            rgba(255,255,255, 0.1) 1px,
+            transparent 1px,
+            transparent 6px
+          ),
+          linear-gradient(
+            90deg,
+            hsla(var(--book-color),1) 0%,
+            hsla(var(--book-color),0.9) 10%,
+            hsla(var(--book-color),0.9) 70%,
+            hsla(var(--book-color),0.8) 99%,
+            hsla(var(--book-color),1) 100%
+          );`,
       },
       colors: {
         "book-color": "hsl(var(--book-color))",

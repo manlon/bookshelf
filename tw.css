@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 .book {
-  @apply bg-book-gradient
-         border-0
+  @apply border-0
          border-book-color
          border-solid
          box-content
@@ -37,7 +36,12 @@
          data-[font='fantasy']:font-book-fantasy
          h-[var(--book-height)]
          w-[var(--book-thickness)]
-         leading-[var(--book-thickness)];
+         leading-[var(--book-thickness)]
+
+         bg-book-gradient
+         data-[spine-pattern='2']:bg-book-gradient-2
+         data-[spine-pattern='3']:bg-book-gradient-3
+         data-[spine-pattern='3']:[background-size:2px_2px];
 }
 
 .title-spine-decoration {
