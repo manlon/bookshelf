@@ -256,7 +256,7 @@ const Components = {
     );
     return `
     <div class="dummy">
-      <div class="book-case border-[#613c00] border-t-[10px] border-x-[10px] float-right w-[770px]">
+      <div class="book-case row-span-2 border-[#613c00] border-t-[10px] border-x-[10px] w-[770px]">
       ${chunks
         .map(([books, offset]) => Components.BookShelf(books, offset, selected, focused, isMoving))
         .join("")}
@@ -287,7 +287,7 @@ const Components = {
       ["Pages", `${book.pages}pp.`],
     ];
     return `
-     <aside class="selected-book p-0 h-[268px] w-[400px] border-2">
+     <aside class="selected-book p-0 mt-2 h-[268px] w-[400px] border-2">
         <dl class="book-details grid grid-cols-2 grid-rows-[1fr_2fr]
                    h-full pt-[24px] px-[8px] relative border-book-color
                    leading-none"
