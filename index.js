@@ -53,6 +53,7 @@ const randomColor = () => {
   let text = l < LIGHT_TEXT_THRESH ? TEXT_COLORS.LIGHT : TEXT_COLORS.DARK;
   return [`${h},${s}%,${l}%`, text];
 };
+const rotate = (arr) => arr.slice(1).concat(arr.slice(0, 1));
 const morph = (el1, el2, options) =>
   morphdom(el1, el2, {
     onBeforeElUpdated: function (fromEl, toEl) {
@@ -90,11 +91,13 @@ class Book {
     return (this._abbrTitle ||= this.title.split(/[:;]/)[0]);
   }
   get abbreviatedAuthor() {
-    return (this._abbrAuth ||= this.author
-      .replace(/[^a-zA-Z0-9,\ ]/g, "")
-      .split(/\ |,/)
-      .filter((s) => s)
-      .map((s) => s[0])
+    return (this._abbrAuth ||= (rotate(
+      this.author
+        .replace(/[^a-zA-Z0-9,\ ]/g, "")
+        .split(/\ |,/)
+        .filter((s) => s)
+        .map((s) => s[0])
+    )
       .join("")
       .substring(0, 3)
       .toUpperCase());
