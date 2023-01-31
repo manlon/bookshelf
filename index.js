@@ -91,7 +91,7 @@ class Book {
     return (this._abbrTitle ||= this.title.split(/[:;]/)[0]);
   }
   get abbreviatedAuthor() {
-    return (this._abbrAuth ||= (rotate(
+    return (this._abbrAuth ||= rotate(
       this.author
         .replace(/[^a-zA-Z0-9,\ ]/g, "")
         .split(/\ |,/)
@@ -100,7 +100,7 @@ class Book {
     )
       .join("")
       .substring(0, 3)
-      .toUpperCase()));
+      .toUpperCase());
   }
   get decoration() {
     return (this._deco ??=
