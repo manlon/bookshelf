@@ -361,6 +361,9 @@ const attachEventHandlers = (app) => {
       app.focusBook(index);
     }
   });
+  document.getElementById("toggleHowTo").addEventListener("click", (e) => {
+    document.getElementById("howTo").toggleAttribute("data-closed");
+  });
 };
 
 var sortable;
