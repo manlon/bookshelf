@@ -100,7 +100,7 @@ class Book {
     )
       .join("")
       .substring(0, 3)
-      .toUpperCase());
+      .toUpperCase()));
   }
   get decoration() {
     return (this._deco ??=
