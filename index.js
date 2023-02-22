@@ -17,11 +17,13 @@ const MAX_HEIGHT = 145;
 const APPROX_CHAR_PER_PAGE = 1277;
 const NUM_BOOKS = 47;
 const SHELF_WIDTH = 660;
-const MIN_SAT = 5;
-const MAX_SAT = 50;
-const MIN_LIGHT = 8;
-const MAX_LIGHT = 60;
+const LIGHT_SAT_DELTA = 10;
 const LIGHT_TEXT_THRESH = 55;
+const HUE_RANGES = [
+  [[-30, 30], 0.4],
+  [[190, 240], 0.4],
+  [[0, 360], 0.2],
+];
 
 function shuffle(array) {
   let currentIndex = array.length,
@@ -43,13 +45,17 @@ const weightedChoice = (itemsWithWeights) => {
 };
 const randomIntRange = (min, max) => Math.floor((max - min) * Math.random() + min);
 const clampInt = (val, max, min = 0) => {
-  [min, max] = new Int32Array([min, max]).sort();
+  [min, max] = min < max ? [min, max] : [max, min];
   return Math.max(Math.min(Math.floor(val), max), min);
 };
+
 const randomColor = () => {
-  let h = randomIntRange(0, 360);
-  let s = randomIntRange(MIN_SAT, MAX_SAT);
-  let l = randomIntRange(MIN_LIGHT, MAX_LIGHT);
+  let [hue_min, hue_max] = weightedChoice(HUE_RANGES);
+  let h = randomIntRange(hue_min, hue_max);
+  let s = randomIntRange(0, 100);
+  let l_min = clampInt(80 - s - LIGHT_SAT_DELTA, 0, 85);
+  let l_max = clampInt(80 - s + LIGHT_SAT_DELTA, 15, 100);
+  let l = randomIntRange(l_min, l_max);
   let text = l < LIGHT_TEXT_THRESH ? TEXT_COLORS.LIGHT : TEXT_COLORS.DARK;
   return [`${h},${s}%,${l}%`, text];
 };
