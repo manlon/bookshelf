@@ -4873,8 +4873,8 @@
     },
     BookDetail: (dt, dd) => {
       return `
-    <dt>${dt}</dt>
-    <dd>${dd}</dd>
+      <dt>${dt}</dt>
+      <dd>${dd}</dd>
     `;
     },
     Book: (book, selected, focused, moving, i) => {
@@ -4926,6 +4926,9 @@
         const index = parseInt(bookEl.dataset.index);
         app.focusBook(index);
       }
+    });
+    document.getElementById("toggleHowTo").addEventListener("click", (e) => {
+      document.getElementById("howTo").toggleAttribute("data-closed");
     });
   };
   var sortable;

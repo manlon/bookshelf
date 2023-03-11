@@ -354,8 +354,8 @@ const Components = {
 
   BookDetail: (dt, dd) => {
     return `
-    <dt>${dt}</dt>
-    <dd>${dd}</dd>
+      <dt>${dt}</dt>
+      <dd>${dd}</dd>
     `;
   },
 
@@ -381,7 +381,9 @@ const Components = {
               data-spine-decoration="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
-        <span class="author">${book.abbreviatedAuthor}</span>
+        <span class="author">${
+          book.abbreviatedAuthor
+        }</span>
     </li>`;
   },
 };
@@ -408,6 +410,9 @@ const attachEventHandlers = (app) => {
       const index = parseInt(bookEl.dataset.index);
       app.focusBook(index);
     }
+  });
+  document.getElementById("toggleHowTo").addEventListener("click", (e) => {
+    document.getElementById("howTo").toggleAttribute("data-closed");
   });
 };
 
