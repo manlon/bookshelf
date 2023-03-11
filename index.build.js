@@ -5,6 +5,7 @@
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
@@ -24,6 +25,10 @@
     isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
     mod
   ));
+  var __publicField = (obj, key, value) => {
+    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+    return value;
+  };
 
   // node_modules/@shopify/draggable/lib/draggable.bundle.js
   var require_draggable_bundle = __commonJS({
@@ -5724,10 +5729,6 @@
     [min, max] = min < max ? [min, max] : [max, min];
     return Math.max(Math.min(Math.floor(val), max), min);
   };
-  var bookPotentialHeight = (pages) => pages / (MAX_HEIGHT - MIN_HEIGHT) * 2 + MIN_HEIGHT;
-  var bookHeight = (pages) => clampInt(randomIntRange(MIN_HEIGHT, bookPotentialHeight(pages)), MAX_HEIGHT);
-  var bookThickness = (pages) => clampInt(pages * PAGE_THICKNESS + COVER_THICKNESS, MAX_THICKNESS);
-  var bookLengthPages = (characters) => Math.floor(characters / APPROX_CHAR_PER_PAGE);
   var randomColor = () => {
     let colorIndex = Math.floor(Math.random() * (LIGHT_COLORS.length + DARK_COLORS.length)) - 1;
     if (colorIndex === -1) {
@@ -5735,60 +5736,47 @@
     }
     return colorIndex < DARK_COLORS.length ? [DARK_COLORS[colorIndex], TEXT_COLORS.LIGHT] : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
   };
-  var abbreviateTitle = (title) => title.split(/[:;]/)[0];
-  var abbreviateAuthor = (author) => {
-    let names = author.replace(/[^a-zA-Z0-9,\ ]/g, "").split(/\ |,/);
-    names.push(names.shift());
-    return names.reduce((acc, word) => {
-      if (word) {
-        acc += word.substring(0, 1);
-      }
-      return acc;
-    }, "").substring(0, 3).toUpperCase();
+  var Book = class {
+    static randomLibrary(bookData, size) {
+      return randomSubset(bookData, size).map((b) => new Book(b));
+    }
+    constructor({ title, author, characters, year }) {
+      Object.assign(this, { title, author, characters, year });
+      this.font = choice(FONTS);
+      [this.backgroundColor, this.textColor] = randomColor();
+    }
+    get pages() {
+      return this._pages ||= Math.floor(this.characters / APPROX_CHAR_PER_PAGE);
+    }
+    get height() {
+      if (this._height)
+        return this._height;
+      let potential = this.pages / (MAX_HEIGHT - MIN_HEIGHT) * 2 + MIN_HEIGHT;
+      return this._height = clampInt(randomIntRange(MIN_HEIGHT, potential), MAX_HEIGHT);
+    }
+    get thickness() {
+      return this._thickness ||= clampInt(
+        this.pages * PAGE_THICKNESS + COVER_THICKNESS,
+        MAX_THICKNESS
+      );
+    }
+    get abbreviatedTitle() {
+      return this._abbrTitle ||= this.title.split(/[:;]/)[0];
+    }
+    get abbreviatedAuthor() {
+      return this._abbrAuth ||= this.author.replace(/[^a-zA-Z0-9,\ ]/g, "").split(/\ |,/).filter((s) => s).map((s) => s[0]).join("").substring(0, 3).toUpperCase();
+    }
+    get decoration() {
+      return this._deco ||= this.abbreviatedTitle.length < 15 ? "border-top: 4px double;" + choice([`border-bottom: ${choice(["4px double", "2px solid"])};`, ""]) : "";
+    }
   };
-  var decorate = (shortTitle) => {
-    return shortTitle.length < 15 ? "border-top: 4px double;" + choice([`border-bottom: ${choice(["4px double", "2px solid"])};`, ""]) : "";
-  };
-  var assignCosmeticAttributes = (book) => {
-    let [backgroundColor, textColor] = randomColor();
-    let pages = bookLengthPages(book.characters);
-    let abbreviatedTitle = abbreviateTitle(book.title);
-    return {
-      ...book,
-      pages,
-      abbreviatedTitle,
-      backgroundColor,
-      textColor,
-      height: bookHeight(pages),
-      thickness: bookThickness(pages),
-      abbreviatedAuthor: abbreviateAuthor(book.author),
-      font: choice(FONTS),
-      decoration: decorate(abbreviatedTitle)
-    };
-  };
-  var MODES = {
-    DEFAULT: "default",
-    MOVING: "moving"
-  };
-  var DIRECTIONAL_KEYS = /* @__PURE__ */ new Map([
-    ["h", "l"],
-    ["j", "l"],
-    ["k", "k"],
-    ["l", "r"],
-    ["i", "u"],
-    [";", "r"],
-    ["ArrowLeft", "l"],
-    ["ArrowRight", "r"],
-    ["ArrowUp", "u"],
-    ["ArrowDown", "k"]
-  ]);
-  var ApplicationState = class {
+  var _ApplicationState = class {
     constructor(numBooks, renderFn) {
-      this.books = randomSubset(plucked_classics_default, numBooks).map(assignCosmeticAttributes);
-      this.mode = MODES.DEFAULT;
+      this.books = Book.randomLibrary(plucked_classics_default, numBooks);
+      this.mode = _ApplicationState.MODES.DEFAULT;
       this.focused = 0;
       this.selected = null;
-      this.mode = MODES.DEFAULT;
+      this.mode = _ApplicationState.MODES.DEFAULT;
       this.multiplier = 1;
       this._render = renderFn;
     }
@@ -5797,17 +5785,17 @@
       this.render();
     }
     keyDown(key) {
-      if (this.mode == MODES.MOVING) {
+      if (this.mode == _ApplicationState.MODES.MOVING) {
         if (key >= 1 && key <= 9) {
           this.multiplier = parseInt(key, 10);
         }
         let direction;
-        if (direction = DIRECTIONAL_KEYS.get(key)) {
+        if (direction = _ApplicationState.DIRECTIONAL_KEYS.get(key)) {
           this.moveSelectedBook(direction);
         }
-      } else if (this.mode == MODES.DEFAULT) {
+      } else if (this.mode == _ApplicationState.MODES.DEFAULT) {
         let direction;
-        if (direction = DIRECTIONAL_KEYS.get(key)) {
+        if (direction = _ApplicationState.DIRECTIONAL_KEYS.get(key)) {
           this.moveCursor(direction);
         } else if (key === " ") {
           this.enterMoveMode();
@@ -5833,24 +5821,20 @@
     enterMoveMode() {
       this.selected = this.focused;
       this.focused = null;
-      this.mode = MODES.MOVING;
+      this.mode = _ApplicationState.MODES.MOVING;
       this.render();
     }
     enterDefaultMode() {
       this.focused = this.selected || this.focused || 0;
       this.selected = null;
       this.multiplier = 1;
-      this.mode = MODES.DEFAULT;
+      this.mode = _ApplicationState.MODES.DEFAULT;
       this.render();
     }
     moveSelectedBook(direction) {
       let dir = direction === "l" ? -1 : 1;
       let oldIdx = this.selected;
-      let newIdx = clampInt(
-        oldIdx + dir * this.multiplier,
-        0,
-        this.books.length - 1
-      );
+      let newIdx = clampInt(oldIdx + dir * this.multiplier, 0, this.books.length - 1);
       this.selected = newIdx;
       this.multiplier = 1;
       this.moveBookToIndex(oldIdx, newIdx);
@@ -5875,57 +5859,72 @@
       return this;
     }
   };
-  var BookList = (books, selected, focused, moving) => {
-    let shelfWidth = 0;
-    let [chunks, _] = books.reduce(
-      ([chunks2, width], book, i) => {
-        if (book.thickness + width >= SHELF_WIDTH) {
-          chunks2.push([[book], i]);
-          return [chunks2, book.thickness];
-        } else {
-          let [chunk, _2] = chunks2[chunks2.length - 1];
-          chunk.push(book);
-          return [chunks2, width + book.thickness];
-        }
-      },
-      [[[[], 0]], 0]
-    );
-    return `
+  var ApplicationState = _ApplicationState;
+  __publicField(ApplicationState, "MODES", { DEFAULT: "default", MOVING: "moving" });
+  __publicField(ApplicationState, "DIRECTIONAL_KEYS", /* @__PURE__ */ new Map([
+    ["h", "l"],
+    ["j", "l"],
+    ["k", "k"],
+    ["l", "r"],
+    ["i", "u"],
+    [";", "r"],
+    ["ArrowLeft", "l"],
+    ["ArrowRight", "r"],
+    ["ArrowUp", "u"],
+    ["ArrowDown", "k"]
+  ]));
+  var Components = {
+    BookList: (books, selected, focused, moving) => {
+      let shelfWidth = 0;
+      let [chunks, _] = books.reduce(
+        ([chunks2, width], book, i) => {
+          if (book.thickness + width >= SHELF_WIDTH) {
+            chunks2.push([[book], i]);
+            return [chunks2, book.thickness];
+          } else {
+            let [chunk, _2] = chunks2[chunks2.length - 1];
+            chunk.push(book);
+            return [chunks2, width + book.thickness];
+          }
+        },
+        [[[[], 0]], 0]
+      );
+      return `
     <div class="book-case">
-    ${chunks.map(([books2, offset]) => BookShelf(books2, offset, selected, focused, moving)).join("")}
+    ${chunks.map(([books2, offset]) => Components.BookShelf(books2, offset, selected, focused, moving)).join("")}
     </div>
-    ${selected !== null || focused !== null ? BookDetails(books[selected] || books[focused]) : ""}`;
-  };
-  var BookShelf = (books, offset, selected, focused, moving) => {
-    return `
+    ${selected !== null || focused !== null ? Components.BookDetails(books[selected] || books[focused]) : ""}`;
+    },
+    BookShelf: (books, offset, selected, focused, moving) => {
+      return `
     <ul class="book-shelf"
         data-book-idx="${offset}">
-        ${books.map((book, i) => Book(book, selected, focused, moving, i + offset)).join("")}
+        ${books.map((book, i) => Components.Book(book, selected, focused, moving, i + offset)).join("")}
     </ul>`;
-  };
-  var BookDetails = (book) => {
-    deets = [
-      ["Title", `<b>${book.title}</b>`],
-      ["Author", book.author],
-      ["Year", `\xA9 ${book.year}`],
-      ["Pages", `${book.pages}pp.`]
-    ];
-    return `
+    },
+    BookDetails: (book) => {
+      deets = [
+        ["Title", `<b>${book.title}</b>`],
+        ["Author", book.author],
+        ["Year", `\xA9 ${book.year}`],
+        ["Pages", `${book.pages}pp.`]
+      ];
+      return `
      <aside class="selected-book">
         <dl class="book-details"
             style="border-color: rgb(${book.backgroundColor});">
-          ${deets.map(([dt, dd]) => BookDetail(dt, dd)).join("")}
-        </dl>
+            ${deets.map(([dt, dd]) => Components.BookDetail(dt, dd)).join("")}
+            </dl>
     </aside>`;
-  };
-  var BookDetail = (dt, dd) => {
-    return `
+    },
+    BookDetail: (dt, dd) => {
+      return `
     <dt>${dt}</dt>
     <dd>${dd}</dd>
-  `;
-  };
-  var Book = (book, selected, focused, moving, i) => {
-    return `
+    `;
+    },
+    Book: (book, selected, focused, moving, i) => {
+      return `
     <li style="
             --book-color: ${book.backgroundColor};
             --book-height: ${book.height}px;
@@ -5946,13 +5945,14 @@
         </span>
         <span class="author">${book.abbreviatedAuthor}</span>
     </li>`;
+    }
   };
   var render = (state) => {
-    document.getElementsByTagName("main")[0].innerHTML = BookList(
+    document.getElementsByTagName("main")[0].innerHTML = Components.BookList(
       state.books,
       state.selected,
       state.focused,
-      state.mode === MODES.MOVING
+      state.mode === ApplicationState.MODES.MOVING
     );
     initSortable();
   };
@@ -5987,7 +5987,7 @@
     sortable.on("sortable:start", (e) => {
       let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
       let book = application.changeSelection(bookIdx);
-      document.querySelector("aside.selected-book").outerHTML = BookDetails(book);
+      document.querySelector("aside.selected-book").outerHTML = Components.BookDetails(book);
       Array.from(document.querySelectorAll("li.book")).forEach(function(el) {
         el.removeAttribute("data-focused");
       });
