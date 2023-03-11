@@ -4564,54 +4564,6 @@
   var morphdom_esm_default = morphdom;
 
   // index.js
-  var LIGHT_COLORS = [
-    "235,219,193",
-    "186,185,154",
-    "202,186,161",
-    "196,176,151",
-    "203,192,190",
-    "223,211,213",
-    "178,177,173",
-    "213,185,181"
-  ];
-  var DARK_COLORS = [
-    "156,94,105",
-    "89,55,79",
-    "185,146,164",
-    "131,108,116",
-    "125,115,122",
-    "20,28,79",
-    "6,14,66",
-    "137,154,174",
-    "150,137,120",
-    "28,63,95",
-    "130,92,47",
-    "166,143,137",
-    "169,133,85",
-    "89,114,82",
-    "25,64,69",
-    "168,138,112",
-    "13,42,72",
-    "126,68,54",
-    "129,149,173",
-    "126,68,54",
-    "160,162,161",
-    "138,157,163",
-    "108,125,132",
-    "18,53,10",
-    "56,76,60",
-    "38,81,125",
-    "90,46,46",
-    "75,0,15",
-    "141,32,54",
-    "23,26,48",
-    "22,46,17",
-    "97,47,16",
-    "53,16,64",
-    "126,19,27",
-    "43,19,17",
-    "12,15,102"
-  ];
   var FONTS = [
     ["serif", 2],
     ["sans", 2],
@@ -4627,6 +4579,13 @@
   var APPROX_CHAR_PER_PAGE = 1277;
   var NUM_BOOKS = 47;
   var SHELF_WIDTH = 660;
+  var LIGHT_SAT_DELTA = 10;
+  var LIGHT_TEXT_THRESH = 55;
+  var HUE_RANGES = [
+    [[-30, 30], 0.4],
+    [[190, 240], 0.4],
+    [[0, 360], 0.2]
+  ];
   function shuffle(array) {
     let currentIndex = array.length, randomIndex;
     while (currentIndex != 0) {
@@ -4650,11 +4609,14 @@
     return Math.max(Math.min(Math.floor(val), max), min);
   };
   var randomColor = () => {
-    let colorIndex = Math.floor(Math.random() * (LIGHT_COLORS.length + DARK_COLORS.length)) - 1;
-    if (colorIndex === -1) {
-      colorIndex = 0;
-    }
-    return colorIndex < DARK_COLORS.length ? [DARK_COLORS[colorIndex], TEXT_COLORS.LIGHT] : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
+    let [hue_min, hue_max] = weightedChoice(HUE_RANGES);
+    let h = randomIntRange(hue_min, hue_max);
+    let s = randomIntRange(0, 100);
+    let l_min = clampInt(80 - s - LIGHT_SAT_DELTA, 0, 85);
+    let l_max = clampInt(80 - s + LIGHT_SAT_DELTA, 15, 100);
+    let l = randomIntRange(l_min, l_max);
+    let text = l < LIGHT_TEXT_THRESH ? TEXT_COLORS.LIGHT : TEXT_COLORS.DARK;
+    return [`${h},${s}%,${l}%`, text];
   };
   var rotate = (arr) => arr.slice(1).concat(arr.slice(0, 1));
   var morph = (el1, el2, options) => morphdom_esm_default(el1, el2, {
@@ -4866,7 +4828,7 @@
       return `
      <aside class="selected-book">
         <dl class="book-details"
-            style="border-color: rgb(${book.backgroundColor});">
+            style="--book-color: ${book.backgroundColor};">
             ${deets.map(([dt, dd]) => Components.BookDetail(dt, dd)).join("")}
             </dl>
     </aside>`;
