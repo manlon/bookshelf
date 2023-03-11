@@ -4724,6 +4724,9 @@
       this.multiplier = 1;
       this._render = renderFn;
     }
+    get isMoving() {
+      return this.mode == _ApplicationState.MODES.DEFAULT;
+    }
     focusBook(idx) {
       this.focused = idx;
       this.render();

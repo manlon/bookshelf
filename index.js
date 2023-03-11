@@ -199,6 +199,10 @@ class ApplicationState {
     this._render = renderFn;
   }
 
+  get isMoving() {
+    return this.mode == ApplicationState.MODES.DEFAULT;
+  }
+
   focusBook(idx) {
     this.focused = idx;
     this.render();
