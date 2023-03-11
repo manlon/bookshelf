@@ -79,6 +79,13 @@ function shuffle(array) {
 }
 const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
 const choice = (items) => randomSubset(items, 1)[0];
+const weightedChoice = (itemsWithWeights) => {
+  let thresh = Math.random() * itemsWithWeights.map(([a, b]) => b).reduce((a, b) => a + b);
+  return itemsWithWeights.reduce(
+    ([best, sum], [item, wt]) => (sum < thresh ? [item, sum + wt] : [best, sum]),
+    [null, 0]
+  )[0];
+};
 const randomIntRange = (min, max) => Math.floor((max - min) * Math.random() + min);
 const clampInt = (val, max, min = 0) => {
   [min, max] = min < max ? [min, max] : [max, min];
@@ -95,7 +102,7 @@ const randomColor = () => {
     ? [DARK_COLORS[colorIndex], TEXT_COLORS.LIGHT]
     : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
 };
-
+const rotate = (arr) => arr.slice(1).concat(arr.slice(0, 1));
 const morph = (el1, el2, options) =>
   morphdom(el1, el2, {
     onBeforeElUpdated: function (fromEl, toEl) {
@@ -133,11 +140,13 @@ class Book {
     return (this._abbrTitle ||= this.title.split(/[:;]/)[0]);
   }
   get abbreviatedAuthor() {
-    return (this._abbrAuth ||= this.author
-      .replace(/[^a-zA-Z0-9,\ ]/g, "")
-      .split(/\ |,/)
-      .filter((s) => s)
-      .map((s) => s[0])
+    return (this._abbrAuth ||= rotate(
+      this.author
+        .replace(/[^a-zA-Z0-9,\ ]/g, "")
+        .split(/\ |,/)
+        .filter((s) => s)
+        .map((s) => s[0])
+    )
       .join("")
       .substring(0, 3)
       .toUpperCase());

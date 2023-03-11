@@ -6238,6 +6238,7 @@
     }
     return colorIndex < DARK_COLORS.length ? [DARK_COLORS[colorIndex], TEXT_COLORS.LIGHT] : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
   };
+  var rotate = (arr) => arr.slice(1).concat(arr.slice(0, 1));
   var morph = (el1, el2, options) => morphdom_esm_default(el1, el2, {
     onBeforeElUpdated: function(fromEl, toEl) {
       if (fromEl.isEqualNode(toEl))
@@ -6275,7 +6276,9 @@
       return this._abbrTitle ||= this.title.split(/[:;]/)[0];
     }
     get abbreviatedAuthor() {
-      return this._abbrAuth ||= this.author.replace(/[^a-zA-Z0-9,\ ]/g, "").split(/\ |,/).filter((s) => s).map((s) => s[0]).join("").substring(0, 3).toUpperCase();
+      return this._abbrAuth ||= rotate(
+        this.author.replace(/[^a-zA-Z0-9,\ ]/g, "").split(/\ |,/).filter((s) => s).map((s) => s[0])
+      ).join("").substring(0, 3).toUpperCase();
     }
     get decoration() {
       return this._deco ||= this.abbreviatedTitle.length < 15 ? "border-top: 4px double;" + choice([`border-bottom: ${choice(["4px double", "2px solid"])};`, ""]) : "";
