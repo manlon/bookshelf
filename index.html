@@ -3,82 +3,234 @@
   <head>
     <meta charset="utf8" />
     <style type="text/css">
-      html {
-        min-height: 100%;
+      *,
+      ::before,
+      ::after {
+        box-sizing: border-box;
+        border-width: 0;
+        border-style: solid;
+        border-color: #e5e7eb;
       }
       body {
-        background-color: #eaeaea;
-        font-family: "Palatino Linotype", Palatino, Palladio, "URW Palladio L", "Book Antiqua",
-          Baskerville, "Bookman Old Style", "Bitstream Charter", "Nimbus Roman No9 L", Garamond,
-          "Apple Garamond", "ITC Garamond Narrow", "New Century Schoolbook", "Century Schoolbook",
-          "Century Schoolbook L", Georgia, serif;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        direction: rtl;
         margin: 0;
-        min-height: 700px;
-        min-width: 1200px;
-        overflow: auto;
-        padding: 0;
+        padding-top: 1.5rem;
+        background-color: #eaeaea;
+        font-family: Palatino Linotype, Palatino, Palladio, URW Palladio L, Book Antiqua,
+          Baskerville, Bookman Old Style, Bitstream Charter, Nimbus Roman No9 L, Garamond,
+          Apple Garamond, ITC Garamond Narrow, New Century Schoolbook, Century Schoolbook,
+          Century Schoolbook L, Georgia, serif;
       }
-      #app {
-        margin: 12px;
-        overflow: hidden;
+      main {
+        display: contents;
+        direction: ltr;
+        margin: 0.75rem;
       }
-      .book-case {
-        border: solid #613c00;
-        border-width: 10px 10px 0;
+      #howTo {
+        padding: 1.5rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        order: -1;
+        direction: ltr;
+      }
+      #howTo[data-closed] {
+        display: none;
+      }
+      #toggleHowTo {
         float: right;
-        width: 750px;
+        cursor: pointer;
       }
-      .book-shelf {
-        align-items: flex-end;
-        border-bottom: 6px solid #613c00;
-        display: flex;
-        flex-direction: row;
-        justify-content: left;
-        list-style: none;
-        height: 200px;
-        margin: 12px 0 16px;
+      #toggleHowTo svg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+      #howTo h2 {
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+      #howTo ul {
+        margin: 1rem;
+        margin-left: 1.5rem;
+        list-style-type: disc;
         padding: 0;
       }
-      .book {
-        border-radius: 2px 2px 1px 1px;
-        cursor: pointer;
-        font-size: 14px;
-        list-style: none;
-        overflow: hidden;
-        padding: 8px 2px 24px;
+      #howTo code {
+        font-weight: 700;
+      }
+
+      .book-case {
+        grid-row: span 2 / span 2;
+        border-color: #613c00;
+        border-top-width: 10px;
+        border-left-width: 10px;
+        border-right-width: 10px;
+        width: 770px;
+      }
+
+      .book-shelf {
+        display: flex;
+        align-items: flex-end;
+        height: 200px;
+        padding: 0px;
+        margin-top: 0.75rem;
+        margin-bottom: 1rem;
+        border-bottom-width: 6px;
+        border-color: #613c00;
+      }
+
+      aside.selected-book {
+        padding: 0px;
+        margin-top: 0.5rem;
+        height: 268px;
+        width: 400px;
+        border-width: 2px;
+      }
+
+      .book-details {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: 1fr 2fr;
+        margin: 0;
+        height: 100%;
+        padding-top: 24px;
+        padding-left: 8px;
+        padding-right: 8px;
         position: relative;
+        border-color: rgb(var(--book-color));
+        line-height: 1;
+      }
+
+      .book-details dt {
+        visibility: hidden;
+      }
+
+      .book-details dd {
         text-align: center;
-        white-space: nowrap;
+        position: relative;
+        z-index: 1;
+        padding-bottom: 0.25rem;
+        margin: 0;
+      }
+
+      .book {
+        position: relative;
         z-index: 2;
+        box-sizing: content-box;
+        height: var(--book-height);
+        width: var(--book-thickness);
+        cursor: pointer;
+        white-space: nowrap;
+        border-top-left-radius: 0.125rem;
+        border-top-right-radius: 0.125rem;
+        border-bottom-right-radius: 1px;
+        border-bottom-left-radius: 1px;
+        border-width: 0px;
+        border-style: solid;
+        border-color: rgb(var(--book-color));
+        background-image: linear-gradient(
+          90deg,
+          rgba(var(--book-color), 1) 0%,
+          rgba(var(--book-color), 0.9) 10%,
+          rgba(var(--book-color), 0.9) 70%,
+          rgba(var(--book-color), 0.8) 99%,
+          rgba(var(--book-color), 1) 100%
+        );
+        padding-top: 0.5rem;
+        padding-bottom: 1.5rem;
+        text-align: center;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        line-height: var(--book-thickness);
+        overflow: hidden;
       }
-      .book.serif {
-        font-family: inherit;
+
+      .book[data-focused] {
+        bottom: -4px;
       }
-      .book.sans-serif {
-        font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT",
-          "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma,
-          Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-      }
-      .book.selected {
-        outline: 2px solid #6dd5ed;
-        outline-offset: 2px;
-        overflow: visible;
+
+      .book[data-selected] {
         z-index: 3;
       }
-      .book.focused {
-        bottom: -4px;
-        overflow: visible;
-        transform: rotateX(-15deg);
+
+      .book[data-focused] {
         z-index: 1;
       }
-      .book.focused + .book {
-        z-index: 0;
+
+
+      .book[data-font="serif"] {
+        font-family: Palatino Linotype, Palatino, Palladio, URW Palladio L, Book Antiqua,
+          Baskerville, Bookman Old Style, Bitstream Charter, Nimbus Roman No9 L, Garamond,
+          Apple Garamond, ITC Garamond Narrow, New Century Schoolbook, Century Schoolbook,
+          Century Schoolbook L, Georgia, serif;
       }
+
+      .book[data-font="sans"] {
+        font-family: Frutiger, Frutiger Linotype, Univers, Calibri, Gill Sans, Gill Sans MT,
+          Myriad Pro, Myriad, DejaVu Sans Condensed, Liberation Sans, Nimbus Sans L, Tahoma, Geneva,
+          Helvetica Neue, Helvetica, Arial, sans-serif;
+      }
+
+      .book[data-text-color="light"] {
+        --tw-text-opacity: 1;
+        color: rgb(243 244 246 / var(--tw-text-opacity));
+      }
+
+      .book[data-text-color="dark"] {
+        --tw-text-opacity: 1;
+        color: rgb(75 85 99 / var(--tw-text-opacity));
+      }
+
+      .book[data-selected] {
+        outline-style: solid;
+        outline-width: 2px;
+        outline-offset: 2px;
+        outline-color: #77abb7;
+      }
+
+      .book[data-focused] {
+        overflow: visible;
+        transform: rotateX(-15deg);
+      }
+
+      .book .title {
+        display: block;
+        position: absolute;
+        top: 8px;
+        bottom: 27px;
+        left: 0px;
+        right: 0px;
+        padding-top: 0.25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        writing-mode: vertical-lr;
+      }
+
+      .book .author {
+        display: block;
+        position: absolute;
+        bottom: 8px;
+        left: 0px;
+        right: 0px;
+        text-align: center;
+        line-height: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
       .book::before {
         background: #fff;
         border-width: 0 2px 2px;
         border-style: solid;
         border-color: inherit;
+        box-sizing: content-box;
         content: " ";
         display: none;
         height: 45px;
@@ -89,10 +241,12 @@
         width: calc(100% - 4px);
         z-index: 3;
       }
-      .book.focused::before {
+
+      .book[data-focused]::before {
         display: block;
       }
-      .book.focused::after {
+
+      .book[data-focused]::after {
         background: radial-gradient(circle at top, #6dd5ed, transparent);
         border-radius: 0 0 8px 8px;
         bottom: -13px;
@@ -105,43 +259,7 @@
         width: 16px;
         z-index: 4;
       }
-      .title {
-        bottom: 27px;
-        display: block;
-        left: 0;
-        overflow: hidden;
-        padding-top: 2px;
-        position: absolute;
-        right: 0;
-        text-overflow: ellipsis;
-        top: 8px;
-        vertical-align: middle;
-        writing-mode: vertical-lr;
-      }
-      .author {
-        bottom: 8px;
-        display: block;
-        left: 0;
-        line-height: 14px;
-        overflow: hidden;
-        position: absolute;
-        right: 0;
-        text-align: center;
-      }
 
-      .selected-book {
-        height: 236px;
-        position: relative;
-        padding: 0;
-        width: 400px;
-      }
-      .book-details {
-        display: block;
-        height: 100%;
-        margin: 0;
-        padding: 24px 8px 8px;
-        position: relative;
-      }
       .book-details::before {
         background: #fff;
         border-color: inherit;
@@ -157,6 +275,7 @@
         top: 0;
         width: 50%;
       }
+
       .book-details::after {
         background: #fff;
         border-color: inherit;
@@ -173,35 +292,14 @@
         top: 1px;
         width: 50%;
       }
-      .book-details dt {
-        clear: left;
-        color: #fff;
-        float: left;
-        font-weight: bold;
-        position: relative;
-        width: 54%;
-        z-index: 1;
-      }
-      .book-details dd {
-        float: left;
-        margin: 0;
-        position: relative;
-        text-align: center;
-        width: 46%;
-        z-index: 1;
-      }
 
-      #howTo {
-        font-size: 15px;
-        line-height: 20px;
-        padding: 12px;
-        position: absolute;
-        top: 280px;
-        width: 400px;
-      }
-      #howTo code {
-        font-family: monospace;
-        font-weight: bold;
+      @media (min-width: 1024px) {
+        body {
+          grid-template-columns: 800px auto;
+        }
+        #howTo {
+          order: 0;
+        }
       }
     </style>
   </head>
