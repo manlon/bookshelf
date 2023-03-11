@@ -6012,5 +6012,4 @@
   }
   var application = new ApplicationState(NUM_BOOKS, render).render();
   attachEventHandlers(application);
-  initSortable();
 })();
