@@ -162,6 +162,43 @@
         z-index: 1;
       }
 
+      .book[data-spine-pattern="2"] {
+        background-image: repeating-linear-gradient(
+            36deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.1) 1px,
+            transparent 0px,
+            transparent 2px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(var(--book-color), 1) 0%,
+            rgba(var(--book-color), 0.9) 10%,
+            rgba(var(--book-color), 0.9) 70%,
+            rgba(var(--book-color), 0.8) 99%,
+            rgba(var(--book-color), 1) 100%
+          );
+      }
+
+      .book[data-spine-pattern="3"] {
+        background-image: repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.1) 1px,
+            transparent 1px,
+            transparent 6px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(var(--book-color), 1) 0%,
+            rgba(var(--book-color), 0.9) 10%,
+            rgba(var(--book-color), 0.9) 70%,
+            rgba(var(--book-color), 0.8) 99%,
+            rgba(var(--book-color), 1) 100%
+          );
+        background-size: 2px 2px;
+      }
+
       .book[data-font="serif"] {
         font-family: Palatino Linotype, Palatino, Palladio, URW Palladio L, Book Antiqua,
           Baskerville, Bookman Old Style, Bitstream Charter, Nimbus Roman No9 L, Garamond,

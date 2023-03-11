@@ -166,6 +166,13 @@ class Book {
           ])
         : "");
   }
+  get spinePattern() {
+    return (this._pattern ??= weightedChoice([
+      ["", 0.3],
+      ["2", 0.5],
+      ["3", 0.2],
+    ]));
+  }
 }
 
 class ApplicationState {
@@ -364,6 +371,7 @@ const Components = {
         ${focused === i ? "data-focused" : ""}
         data-text-color="${book.textColor}"
         data-font="${book.font}"
+        data-spine-pattern="${book.spinePattern}"
         >
         <span class="title"
               data-spine-decoration="${book.decoration}">

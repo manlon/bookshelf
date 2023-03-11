@@ -4706,6 +4706,13 @@
         ["ridge", 0.25]
       ]) : "";
     }
+    get spinePattern() {
+      return this._pattern ??= weightedChoice([
+        ["", 0.3],
+        ["2", 0.5],
+        ["3", 0.2]
+      ]);
+    }
   };
   var _ApplicationState = class {
     constructor(numBooks, renderFn) {
@@ -4883,6 +4890,7 @@
         ${focused === i ? "data-focused" : ""}
         data-text-color="${book.textColor}"
         data-font="${book.font}"
+        data-spine-pattern="${book.spinePattern}"
         >
         <span class="title"
               data-spine-decoration="${book.decoration}">
