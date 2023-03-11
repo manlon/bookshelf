@@ -5713,10 +5713,7 @@
     while (currentIndex != 0) {
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex--;
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex],
-        array[currentIndex]
-      ];
+      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
     return array;
   }
@@ -5971,9 +5968,7 @@
     );
     return `
     <div class="book-case">
-    ${chunks.map(
-      ([books2, offset]) => BookShelf(books2, offset, selected, focused, moving)
-    ).join("")}
+    ${chunks.map(([books2, offset]) => BookShelf(books2, offset, selected, focused, moving)).join("")}
     </div>
     ${selected !== null || focused !== null ? BookDetails(books[selected] || books[focused]) : ""}`;
   };
@@ -6057,10 +6052,7 @@
       }
     });
   };
-  var application = new ApplicationState(
-    initialState(TOTAL_BOOKS),
-    render
-  ).render();
+  var application = new ApplicationState(initialState(TOTAL_BOOKS), render).render();
   attachEventHandlers(application);
   var sortable;
   function initSortable() {

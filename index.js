@@ -72,17 +72,13 @@ function shuffle(array) {
   while (currentIndex != 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
   return array;
 }
 const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
 const choice = (items) => randomSubset(items, 1)[0];
-const randomIntRange = (min, max) =>
-  Math.floor((max - min) * Math.random() + min);
+const randomIntRange = (min, max) => Math.floor((max - min) * Math.random() + min);
 const clampInt = (val, max) => Math.min(Math.floor(val), max);
 
 /**
@@ -91,29 +87,25 @@ const clampInt = (val, max) => Math.min(Math.floor(val), max);
  *
  **/
 
-const bookPotentialHeight = (pages) =>
-  (pages / (MAX_HEIGHT - MIN_HEIGHT)) * 2 + MIN_HEIGHT;
+const bookPotentialHeight = (pages) => (pages / (MAX_HEIGHT - MIN_HEIGHT)) * 2 + MIN_HEIGHT;
 
 const bookHeight = (pages) =>
   clampInt(randomIntRange(MIN_HEIGHT, bookPotentialHeight(pages)), MAX_HEIGHT);
 
-const bookThickness = (pages) =>
-  clampInt(pages * PAGE_THICKNESS + COVER_THICKNESS, MAX_THICKNESS);
+const bookThickness = (pages) => clampInt(pages * PAGE_THICKNESS + COVER_THICKNESS, MAX_THICKNESS);
 
-const bookLengthPages = (characters) =>
-  Math.floor(characters / APPROX_CHAR_PER_PAGE);
+const bookLengthPages = (characters) => Math.floor(characters / APPROX_CHAR_PER_PAGE);
 
-  const randomColor = () => {
-    let colorIndex =
-      Math.floor(Math.random() * (LIGHT_COLORS.length + DARK_COLORS.length)) - 1;
-    if (colorIndex === -1) {
-      colorIndex = 0;
-    }
-  
-    return colorIndex < DARK_COLORS.length
-      ? [DARK_COLORS[colorIndex], TEXT_COLORS.LIGHT]
-      : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
-  };
+const randomColor = () => {
+  let colorIndex = Math.floor(Math.random() * (LIGHT_COLORS.length + DARK_COLORS.length)) - 1;
+  if (colorIndex === -1) {
+    colorIndex = 0;
+  }
+
+  return colorIndex < DARK_COLORS.length
+    ? [DARK_COLORS[colorIndex], TEXT_COLORS.LIGHT]
+    : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
+};
 
 const abbreviateTitle = (title) => title.split(/[:;]/)[0];
 
@@ -305,11 +297,9 @@ class ApplicationState {
       case STATE_ACTIONS.MOVE_CURSOR:
         direction = data;
         if (direction === "l") {
-          state.focused =
-            state.focused > 0 ? state.focused - 1 : state.books.length - 1;
+          state.focused = state.focused > 0 ? state.focused - 1 : state.books.length - 1;
         } else if (direction === "r") {
-          state.focused =
-            state.focused === state.books.length - 1 ? 0 : state.focused + 1;
+          state.focused = state.focused === state.books.length - 1 ? 0 : state.focused + 1;
         }
         state.key = null;
         break;
@@ -396,26 +386,16 @@ const BookList = (books, selected, focused, moving) => {
   );
   return `
     <div class="book-case">
-    ${chunks
-      .map(([books, offset]) =>
-        BookShelf(books, offset, selected, focused, moving)
-      )
-      .join("")}
+    ${chunks.map(([books, offset]) => BookShelf(books, offset, selected, focused, moving)).join("")}
     </div>
-    ${
-      selected !== null || focused !== null
-        ? BookDetails(books[selected] || books[focused])
-        : ""
-    }`;
+    ${selected !== null || focused !== null ? BookDetails(books[selected] || books[focused]) : ""}`;
 };
 
 const BookShelf = (books, offset, selected, focused, moving) => {
   return `
     <ul class="book-shelf"
         data-book-idx="${offset}">
-        ${books
-          .map((book, i) => Book(book, selected, focused, moving, i + offset))
-          .join("")}
+        ${books.map((book, i) => Book(book, selected, focused, moving, i + offset)).join("")}
     </ul>`;
 };
 
@@ -462,9 +442,7 @@ const Book = (book, selected, focused, moving, i) => {
               style="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
-        <span class="author">${
-          book.abbreviatedAuthor
-        }</span>
+        <span class="author">${book.abbreviatedAuthor}</span>
     </li>`;
 };
 
@@ -492,15 +470,12 @@ const attachEventHandlers = (app) => {
     if (bookEl) {
       e.preventDefault();
       const index = parseInt(bookEl.dataset.index);
-      app.present({ name: USER_ACTIONS.CLICK_BOOK, data: index })
+      app.present({ name: USER_ACTIONS.CLICK_BOOK, data: index });
     }
   });
 };
 
-const application = new ApplicationState(
-  initialState(TOTAL_BOOKS),
-  render
-).render();
+const application = new ApplicationState(initialState(TOTAL_BOOKS), render).render();
 attachEventHandlers(application);
 
 var sortable;
@@ -518,16 +493,14 @@ function initSortable() {
     Array.from(document.querySelectorAll("li.book")).forEach(function (el) {
       el.removeAttribute("data-focused");
     });
-    document
-      .querySelector(`li.book[data-index="${bookIdx}"`)
-      .setAttribute("data-selected", "");
+    document.querySelector(`li.book[data-index="${bookIdx}"`).setAttribute("data-selected", "");
   });
   sortable.on("sortable:stop", (e) => {
     let el = e.data.dragEvent.source;
     let oldIdx = parseInt(el.dataset.index, 10);
     let newIdx;
     if (el.previousElementSibling) {
-      let sibIdx = parseInt(el.previousElementSibling.dataset.index,10);
+      let sibIdx = parseInt(el.previousElementSibling.dataset.index, 10);
       newIdx = sibIdx > oldIdx ? sibIdx : sibIdx + 1;
     } else {
       let shelf = e.data.dragEvent.source.parentNode;
@@ -540,4 +513,3 @@ function initSortable() {
   });
 }
 initSortable();
-
