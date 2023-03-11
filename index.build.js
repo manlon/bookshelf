@@ -4777,7 +4777,7 @@
                     return _extends({ mirrorOffset, initialX, initialY }, args);
                   };
                   mirror.style.display = "none";
-                  const initialState2 = {
+                  const initialState = {
                     mirror,
                     source,
                     sensorEvent,
@@ -4787,7 +4787,7 @@
                     passedThreshX: true,
                     passedThreshY: true
                   };
-                  return Promise.resolve(initialState2).then(computeMirrorDimensions).then(calculateMirrorOffset).then(resetMirror).then(addMirrorClasses).then(positionMirror({ initial: true })).then(removeMirrorID).then(setState);
+                  return Promise.resolve(initialState).then(computeMirrorDimensions).then(calculateMirrorOffset).then(resetMirror).then(addMirrorClasses).then(positionMirror({ initial: true })).then(removeMirrorID).then(setState);
                 }
                 /**
                  * Mirror move handler
@@ -4805,7 +4805,7 @@
                     this.lastMovedY = lastMovedY;
                     return _extends({ lastMovedX, lastMovedY }, args);
                   };
-                  const initialState2 = {
+                  const initialState = {
                     mirror: mirrorEvent.mirror,
                     sensorEvent: mirrorEvent.sensorEvent,
                     mirrorOffset: this.mirrorOffset,
@@ -4818,7 +4818,7 @@
                     lastMovedX: this.lastMovedX,
                     lastMovedY: this.lastMovedY
                   };
-                  return Promise.resolve(initialState2).then(positionMirror({ raf: true })).then(setState);
+                  return Promise.resolve(initialState).then(positionMirror({ raf: true })).then(setState);
                 }
                 /**
                  * Returns appendable container for mirror based on the appendTo option
@@ -5706,7 +5706,7 @@
   var MIN_HEIGHT = 100;
   var MAX_HEIGHT = 145;
   var APPROX_CHAR_PER_PAGE = 1277;
-  var TOTAL_BOOKS = 47;
+  var NUM_BOOKS = 47;
   var SHELF_WIDTH = 660;
   function shuffle(array) {
     let currentIndex = array.length, randomIndex;
@@ -5720,7 +5720,10 @@
   var randomSubset = (items, n) => shuffle([...items]).slice(0, n);
   var choice = (items) => randomSubset(items, 1)[0];
   var randomIntRange = (min, max) => Math.floor((max - min) * Math.random() + min);
-  var clampInt = (val, max) => Math.min(Math.floor(val), max);
+  var clampInt = (val, max, min = 0) => {
+    [min, max] = min < max ? [min, max] : [max, min];
+    return Math.max(Math.min(Math.floor(val), max), min);
+  };
   var bookPotentialHeight = (pages) => pages / (MAX_HEIGHT - MIN_HEIGHT) * 2 + MIN_HEIGHT;
   var bookHeight = (pages) => clampInt(randomIntRange(MIN_HEIGHT, bookPotentialHeight(pages)), MAX_HEIGHT);
   var bookThickness = (pages) => clampInt(pages * PAGE_THICKNESS + COVER_THICKNESS, MAX_THICKNESS);
@@ -5763,30 +5766,9 @@
       decoration: decorate(abbreviatedTitle)
     };
   };
-  var initialState = (totalBooks) => {
-    return {
-      books: randomSubset(plucked_classics_default, totalBooks).map(assignCosmeticAttributes),
-      focused: 0,
-      selected: null,
-      mode: MODES.DEFAULT,
-      multiplier: 1
-    };
-  };
   var MODES = {
     DEFAULT: "default",
     MOVING: "moving"
-  };
-  var USER_ACTIONS = {
-    CLICK_BOOK: "clickBook",
-    KEY_DOWN: "keyDown",
-    KEY_UP: "keyUp"
-  };
-  var STATE_ACTIONS = {
-    ENTER_DEFAULT_MODE: "enterDefaultMode",
-    MOVE_CURSOR: "moveCursor",
-    ENTER_MOVING_MODE_FOR_BOOK: "enterMovingMode",
-    MOVE_BOOK: "moveBook",
-    REGISTER_MULTIPLIER: "registerMultiplier"
   };
   var DIRECTIONAL_KEYS = /* @__PURE__ */ new Map([
     ["h", "l"],
@@ -5801,155 +5783,97 @@
     ["ArrowDown", "k"]
   ]);
   var ApplicationState = class {
-    constructor(initialData, renderFn) {
-      this._data = initialData;
+    constructor(numBooks, renderFn) {
+      this.books = randomSubset(plucked_classics_default, numBooks).map(assignCosmeticAttributes);
+      this.mode = MODES.DEFAULT;
+      this.focused = 0;
+      this.selected = null;
+      this.mode = MODES.DEFAULT;
+      this.multiplier = 1;
       this._render = renderFn;
-      this.acceptState = this.acceptState.bind(this);
-      this.nextAction = this.nextAction.bind(this);
-      this.present = this.present.bind(this);
-      this.render = this.render.bind(this);
-      return this;
     }
-    get data() {
-      return this._data;
+    focusBook(idx) {
+      this.focused = idx;
+      this.render();
     }
-    set data(_data) {
-      this._data = _data;
-      return this.data;
-    }
-    acceptState(state) {
-      this.data = state;
-      if (!this.nextAction(this.data)) {
-        return this.render();
-      }
-    }
-    nextAction(state) {
-      let direction;
-      if (state.mode === MODES.MOVING) {
-        if (state.key >= 1 && state.key <= 9) {
-          this.present({
-            name: STATE_ACTIONS.REGISTER_MULTIPLIER,
-            data: state.key
-          });
-          return true;
-        } else if (state.key === " ") {
-          this.present({
-            name: STATE_ACTIONS.ENTER_DEFAULT_MODE
-          });
-          return true;
-        } else if (direction = DIRECTIONAL_KEYS.get(state.key)) {
-          this.present({
-            name: STATE_ACTIONS.MOVE_BOOK,
-            data: direction
-          });
-          return true;
+    keyDown(key) {
+      if (this.mode == MODES.MOVING) {
+        if (key >= 1 && key <= 9) {
+          this.multiplier = parseInt(key, 10);
         }
-      } else if (state.mode === MODES.DEFAULT) {
-        if (state.key === "enter") {
-          enterViewingMode.bind(this)();
-          return true;
-        } else if (direction = DIRECTIONAL_KEYS.get(state.key)) {
-          this.present({
-            name: STATE_ACTIONS.MOVE_CURSOR,
-            data: direction
-          });
-          return true;
-        } else if (state.key === " ") {
-          this.present({
-            name: STATE_ACTIONS.ENTER_MOVING_MODE
-          });
-          return true;
+        let direction;
+        if (direction = DIRECTIONAL_KEYS.get(key)) {
+          this.moveSelectedBook(direction);
+        }
+      } else if (this.mode == MODES.DEFAULT) {
+        let direction;
+        if (direction = DIRECTIONAL_KEYS.get(key)) {
+          this.moveCursor(direction);
+        } else if (key === " ") {
+          this.enterMoveMode();
         }
       }
-      return false;
     }
-    present({ name, data }) {
-      const state = Object.assign({}, this.data);
-      let direction;
-      switch (name) {
-        case USER_ACTIONS.KEY_DOWN:
-          if (state.mode !== MODES.MOVING || data !== " ") {
-            state.key = data;
-          }
-          break;
-        case USER_ACTIONS.KEY_UP:
-          if (data === " ") {
-            state.key = data;
-          }
-          break;
-        case USER_ACTIONS.CLICK_BOOK:
-          state.focused = data;
-          break;
-        case STATE_ACTIONS.ENTER_DEFAULT_MODE:
-          state.focused = state.selected || state.focused || 0;
-          state.selected = null;
-          state.multiplier = 1;
-          state.mode = MODES.DEFAULT;
-          state.key = null;
-          break;
-        case STATE_ACTIONS.MOVE_CURSOR:
-          direction = data;
-          if (direction === "l") {
-            state.focused = state.focused > 0 ? state.focused - 1 : state.books.length - 1;
-          } else if (direction === "r") {
-            state.focused = state.focused === state.books.length - 1 ? 0 : state.focused + 1;
-          }
-          state.key = null;
-          break;
-        case STATE_ACTIONS.ENTER_MOVING_MODE:
-          state.selected = state.focused;
-          state.focused = null;
-          state.mode = MODES.MOVING;
-          state.key = null;
-          break;
-        case STATE_ACTIONS.MOVE_BOOK:
-          direction = data;
-          let [newBooks, newSelected] = shiftSelectedIndex(
-            state.selected,
-            direction,
-            state.multiplier,
-            state.books
-          );
-          state.books = newBooks;
-          state.selected = newSelected;
-          state.multiplier = 1;
-          state.key = null;
-          break;
-        case STATE_ACTIONS.REGISTER_MULTIPLIER:
-          state.multiplier = parseInt(data);
-          state.key = null;
-          break;
+    keyUp(key) {
+      if (key === " ") {
+        this.enterDefaultMode();
       }
-      return this.acceptState(state);
+    }
+    moveCursor(direction) {
+      if (direction === "l") {
+        this.focused--;
+      } else if (direction === "r") {
+        this.focused++;
+      }
+      if (this.focused < 0) {
+        this.focused += this.books.length;
+      }
+      this.render();
+    }
+    enterMoveMode() {
+      this.selected = this.focused;
+      this.focused = null;
+      this.mode = MODES.MOVING;
+      this.render();
+    }
+    enterDefaultMode() {
+      this.focused = this.selected || this.focused || 0;
+      this.selected = null;
+      this.multiplier = 1;
+      this.mode = MODES.DEFAULT;
+      this.render();
+    }
+    moveSelectedBook(direction) {
+      let dir = direction === "l" ? -1 : 1;
+      let oldIdx = this.selected;
+      let newIdx = clampInt(
+        oldIdx + dir * this.multiplier,
+        0,
+        this.books.length - 1
+      );
+      this.selected = newIdx;
+      this.multiplier = 1;
+      this.moveBookToIndex(oldIdx, newIdx);
+    }
+    moveBookToIndex(oldIdx, newIdx) {
+      let books = this.books;
+      let removed = books.splice(oldIdx, 1);
+      books.splice(newIdx, 0, ...removed);
+      this.render();
     }
     changeSelection(idx) {
-      this.data.selected = idx;
-      if (idx) {
-        let book = this.data.books[idx];
+      this.selected = idx;
+      if (idx != null) {
+        let book = this.books[idx];
         return book;
       } else {
         return null;
       }
     }
-    moveBookToIndex(oldIdx, newIdx) {
-      let books = this.data.books;
-      let removed = books.splice(oldIdx, 1);
-      books.splice(newIdx, 0, ...removed);
-      this.render();
-    }
     render() {
-      this._render(this.data);
+      this._render(this);
       return this;
     }
-  };
-  var shiftSelectedIndex = (index, direction, multiplier, books) => {
-    if (direction === "l") {
-      multiplier *= -1;
-    }
-    const removed = books.splice(index, 1)[0];
-    const newIndex = Math.min(Math.max(0, index + multiplier), books.length);
-    books.splice(newIndex, 0, removed);
-    return [books, newIndex];
   };
   var BookList = (books, selected, focused, moving) => {
     let shelfWidth = 0;
@@ -6036,24 +5960,22 @@
     window.addEventListener("keydown", (e) => {
       if (e.key === " ")
         e.preventDefault();
-      app.present({ name: USER_ACTIONS.KEY_DOWN, data: e.key });
+      app.keyDown(e.key);
     });
     window.addEventListener("keyup", (e) => {
       if (e.key === " ")
         e.preventDefault();
-      app.present({ name: USER_ACTIONS.KEY_UP, data: e.key });
+      app.keyUp(e.key);
     });
     document.getElementById("app").addEventListener("click", (e) => {
       let bookEl = e.target.closest("li.book");
       if (bookEl) {
         e.preventDefault();
         const index = parseInt(bookEl.dataset.index);
-        app.present({ name: USER_ACTIONS.CLICK_BOOK, data: index });
+        app.focusBook(index);
       }
     });
   };
-  var application = new ApplicationState(initialState(TOTAL_BOOKS), render).render();
-  attachEventHandlers(application);
   var sortable;
   function initSortable() {
     if (sortable) {
@@ -6088,5 +6010,7 @@
       application.focusBook(newIdx);
     });
   }
+  var application = new ApplicationState(NUM_BOOKS, render).render();
+  attachEventHandlers(application);
   initSortable();
 })();
