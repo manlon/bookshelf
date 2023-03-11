@@ -6327,6 +6327,7 @@
       if (this.focused < 0) {
         this.focused += this.books.length;
       }
+      this.focused %= this.books.length;
       this.render();
     }
     enterMoveMode() {
