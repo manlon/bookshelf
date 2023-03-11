@@ -6205,7 +6205,12 @@
     "43,19,17",
     "12,15,102"
   ];
-  var FONTS = ["serif", "sans"];
+  var FONTS = [
+    ["serif", 2],
+    ["sans", 2],
+    ["cursive", 0.5],
+    ["fantasy", 0.25]
+  ];
   var TEXT_COLORS = { LIGHT: "light", DARK: "dark" };
   var COVER_THICKNESS = 12;
   var PAGE_THICKNESS = 0.0667;
@@ -6226,6 +6231,13 @@
   }
   var randomSubset = (items, n) => shuffle([...items]).slice(0, n);
   var choice = (items) => randomSubset(items, 1)[0];
+  var weightedChoice = (itemsWithWeights) => {
+    let thresh = Math.random() * itemsWithWeights.map(([a, b]) => b).reduce((a, b) => a + b);
+    return itemsWithWeights.reduce(
+      ([best, sum], [item, wt]) => sum < thresh ? [item, sum + wt] : [best, sum],
+      [null, 0]
+    )[0];
+  };
   var randomIntRange = (min, max) => Math.floor((max - min) * Math.random() + min);
   var clampInt = (val, max, min = 0) => {
     [min, max] = min < max ? [min, max] : [max, min];
@@ -6254,7 +6266,7 @@
     constructor({ title, author, characters, year }) {
       Object.assign(this, { title, author, characters, year });
       this.id = randomIntRange(0, 1e8);
-      this.font = choice(FONTS);
+      this.font = weightedChoice(FONTS);
       [this.backgroundColor, this.textColor] = randomColor();
     }
     get pages() {
@@ -6395,7 +6407,6 @@
   ]));
   var Components = {
     BookList: ({ books, selected, focused, isMoving }) => {
-      let shelfWidth = 0;
       let [chunks, _] = books.reduce(
         ([chunks2, width], book, i) => {
           if (book.thickness + width >= SHELF_WIDTH) {

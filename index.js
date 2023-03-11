@@ -51,7 +51,12 @@ const DARK_COLORS = [
   "12,15,102",
 ];
 
-const FONTS = ["serif", "sans"];
+const FONTS = [
+  ["serif", 2],
+  ["sans", 2],
+  ["cursive", 0.5],
+  ["fantasy", 0.25],
+];
 const TEXT_COLORS = { LIGHT: "light", DARK: "dark" };
 const COVER_THICKNESS = 12;
 const PAGE_THICKNESS = 0.0667;
@@ -119,7 +124,7 @@ class Book {
   constructor({ title, author, characters, year }) {
     Object.assign(this, { title, author, characters, year });
     this.id = randomIntRange(0, 100000000);
-    this.font = choice(FONTS);
+    this.font = weightedChoice(FONTS);
     [this.backgroundColor, this.textColor] = randomColor();
   }
   get pages() {
@@ -279,7 +284,6 @@ class ApplicationState {
 
 const Components = {
   BookList: ({ books, selected, focused, isMoving }) => {
-    let shelfWidth = 0;
     let [chunks, _] = books.reduce(
       ([chunks, width], book, i) => {
         if (book.thickness + width >= SHELF_WIDTH) {
