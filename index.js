@@ -1,5 +1,6 @@
 import { Sortable } from "@shopify/draggable";
 import BOOKS from "./plucked-classics.json";
+import morphdom from "morphdom";
 
 const LIGHT_COLORS = [
   "235,219,193",
@@ -95,12 +96,22 @@ const randomColor = () => {
     : [LIGHT_COLORS[colorIndex - DARK_COLORS.length], TEXT_COLORS.DARK];
 };
 
+const morph = (el1, el2, options) =>
+  morphdom(el1, el2, {
+    onBeforeElUpdated: function (fromEl, toEl) {
+      if (fromEl.isEqualNode(toEl)) return false;
+      return true;
+    },
+    ...options,
+  });
+
 class Book {
   static randomLibrary(bookData, size) {
     return randomSubset(bookData, size).map((b) => new Book(b));
   }
   constructor({ title, author, characters, year }) {
     Object.assign(this, { title, author, characters, year });
+    this.id = randomIntRange(0, 100000000);
     this.font = choice(FONTS);
     [this.backgroundColor, this.textColor] = randomColor();
   }
@@ -230,11 +241,11 @@ class ApplicationState {
     this.moveBookToIndex(oldIdx, newIdx);
   }
 
-  moveBookToIndex(oldIdx, newIdx) {
+  moveBookToIndex(oldIdx, newIdx, render = true) {
     let books = this.books;
     let removed = books.splice(oldIdx, 1);
     books.splice(newIdx, 0, ...removed);
-    this.render();
+    if (render) this.render();
   }
 
   changeSelection(idx) {
@@ -247,14 +258,17 @@ class ApplicationState {
     }
   }
 
-  render() {
-    this._render(this);
+  render(cb) {
+    requestAnimationFrame(() => {
+      this._render(this);
+      if (cb) cb();
+    });
     return this;
   }
 }
 
 const Components = {
-  BookList: (books, selected, focused, moving) => {
+  BookList: ({ books, selected, focused, isMoving }) => {
     let shelfWidth = 0;
     let [chunks, _] = books.reduce(
       ([chunks, width], book, i) => {
@@ -270,16 +284,18 @@ const Components = {
       [[[[], 0]], 0]
     );
     return `
-    <div class="book-case">
-    ${chunks
-      .map(([books, offset]) => Components.BookShelf(books, offset, selected, focused, moving))
-      .join("")}
-    </div>
-    ${
-      selected !== null || focused !== null
-        ? Components.BookDetails(books[selected] || books[focused])
-        : ""
-    }`;
+    <div class="dummy">
+      <div class="book-case">
+      ${chunks
+        .map(([books, offset]) => Components.BookShelf(books, offset, selected, focused, isMoving))
+        .join("")}
+      </div>
+      ${
+        selected !== null || focused !== null
+          ? Components.BookDetails(books[selected] || books[focused])
+          : ""
+      }
+      </div>`;
   },
 
   BookShelf: (books, offset, selected, focused, moving) => {
@@ -323,6 +339,7 @@ const Components = {
             --book-thickness: ${book.thickness}px;
             "
         class="book"
+        id="book-${book.id}"
         title="${book.title}"
         data-index="${i}"
         ${selected === i ? "data-selected" : ""}
@@ -341,13 +358,9 @@ const Components = {
 };
 
 const render = (state) => {
-  document.getElementsByTagName("main")[0].innerHTML = Components.BookList(
-    state.books,
-    state.selected,
-    state.focused,
-    state.mode === ApplicationState.MODES.MOVING
-  );
-  initSortable();
+  morph(document.querySelector("main"), Components.BookList(state), {
+    childrenOnly: true,
+  });
 };
 
 const attachEventHandlers = (app) => {
@@ -380,7 +393,7 @@ function initSortable() {
   sortable.on("sortable:start", (e) => {
     let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
     let book = application.changeSelection(bookIdx);
-    document.querySelector("aside.selected-book").outerHTML = Components.BookDetails(book);
+    morph(document.querySelector("aside.selected-book"), Components.BookDetails(book));
     Array.from(document.querySelectorAll("li.book")).forEach(function (el) {
       el.removeAttribute("data-focused");
     });
@@ -404,5 +417,7 @@ function initSortable() {
   });
 }
 
-const application = new ApplicationState(NUM_BOOKS, render).render();
-attachEventHandlers(application);
+const application = new ApplicationState(NUM_BOOKS, render).render(() => {
+  initSortable();
+  attachEventHandlers(application);
+});
