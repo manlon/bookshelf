@@ -6230,7 +6230,6 @@
     return array;
   }
   var randomSubset = (items, n) => shuffle([...items]).slice(0, n);
-  var choice = (items) => randomSubset(items, 1)[0];
   var weightedChoice = (itemsWithWeights) => {
     let thresh = Math.random() * itemsWithWeights.map(([a, b]) => b).reduce((a, b) => a + b);
     return itemsWithWeights.reduce(
@@ -6293,7 +6292,12 @@
       ).join("").substring(0, 3).toUpperCase();
     }
     get decoration() {
-      return this._deco ||= this.abbreviatedTitle.length < 15 ? "border-top: 4px double;" + choice([`border-bottom: ${choice(["4px double", "2px solid"])};`, ""]) : "";
+      return this._deco ??= this.abbreviatedTitle.length < 15 ? weightedChoice([
+        ["top-double", 0.5],
+        ["double", 0.25],
+        ["double-solid", 0.25],
+        ["ridge", 0.25]
+      ]) : "";
     }
   };
   var _ApplicationState = class {
@@ -6474,7 +6478,7 @@
         data-font="${book.font}"
         >
         <span class="title"
-              style="${book.decoration}">
+              data-spine-decoration="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
         <span class="author">${book.abbreviatedAuthor}</span>

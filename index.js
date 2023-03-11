@@ -83,7 +83,6 @@ function shuffle(array) {
   return array;
 }
 const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
-const choice = (items) => randomSubset(items, 1)[0];
 const weightedChoice = (itemsWithWeights) => {
   let thresh = Math.random() * itemsWithWeights.map(([a, b]) => b).reduce((a, b) => a + b);
   return itemsWithWeights.reduce(
@@ -157,10 +156,14 @@ class Book {
       .toUpperCase());
   }
   get decoration() {
-    return (this._deco ||=
+    return (this._deco ??=
       this.abbreviatedTitle.length < 15
-        ? "border-top: 4px double;" +
-          choice([`border-bottom: ${choice(["4px double", "2px solid"])};`, ""])
+        ? weightedChoice([
+            ["top-double", 0.5],
+            ["double", 0.25],
+            ["double-solid", 0.25],
+            ["ridge", 0.25],
+          ])
         : "");
   }
 }
@@ -363,7 +366,7 @@ const Components = {
         data-font="${book.font}"
         >
         <span class="title"
-              style="${book.decoration}">
+              data-spine-decoration="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
         <span class="author">${book.abbreviatedAuthor}</span>

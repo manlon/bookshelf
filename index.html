@@ -219,6 +219,25 @@
         writing-mode: vertical-lr;
       }
 
+      .book .title[data-spine-decoration="top-double"] {
+        border-top: 4px double;
+      }
+
+      .book .title[data-spine-decoration="double"] {
+        border-top: 4px double;
+        border-bottom: 4px double;
+      }
+
+      .book .title[data-spine-decoration="double-solid"] {
+        border-top: 4px double;
+        border-bottom: 2px solid;
+      }
+
+      .book .title[data-spine-decoration="ridge"] {
+        border-top: 4px groove;
+        border-bottom: 4px ridge;
+      }
+
       .book .author {
         display: block;
         position: absolute;
