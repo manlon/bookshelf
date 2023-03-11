@@ -265,7 +265,7 @@ const Components = {
     );
     return `
     <div class="dummy">
-      <div class="book-case row-span-2 border-[#613c00] border-t-[10px] border-x-[10px] w-[770px]">
+      <div class="book-case">
       ${chunks
         .map(([books, offset]) => Components.BookShelf(books, offset, selected, focused, isMoving))
         .join("")}
@@ -280,7 +280,7 @@ const Components = {
 
   BookShelf: (books, offset, selected, focused, moving) => {
     return `
-    <ul class="book-shelf flex h-[200px] mt-3 mb-4 p-0 items-end border-b-[6px] border-[#613c00]"
+    <ul class="book-shelf"
         data-book-idx="${offset}">
         ${books
           .map((book, i) => Components.Book(book, selected, focused, moving, i + offset))
@@ -296,10 +296,8 @@ const Components = {
       ["Pages", `${book.pages}pp.`],
     ];
     return `
-     <aside class="selected-book p-0 mt-2 h-[268px] w-[400px] border-2">
-        <dl class="book-details grid grid-cols-2 grid-rows-[1fr_2fr]
-                   h-full pt-[24px] px-[8px] relative border-book-color
-                   leading-none"
+     <aside class="selected-book">
+        <dl class="book-details"
             style="--book-color: ${book.backgroundColor};">
           ${deets.map(([dt, dd]) => Components.BookDetail(dt, dd)).join("")}
         </dl>
@@ -308,8 +306,8 @@ const Components = {
 
   BookDetail: (dt, dd) => {
     return `
-    <dt class="invisible">${dt}</dt>
-    <dd class="text-center relative z-[1] pb-1">${dd}</dd>
+    <dt>${dt}</dt>
+    <dd>${dd}</dd>
   `;
   },
 
@@ -331,13 +329,11 @@ const Components = {
         data-font="${book.font}"
         data-spine-pattern="${book.spinePattern}"
         >
-        <span class="title block absolute top-[8px] bottom-[27px] left-0 right-0
-                     pt-1 align-middle truncate [writing-mode:vertical-lr]
-                     title-spine-decoration"
+        <span class="title"
               data-spine-decoration="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
-        <span class="author bottom-[8px] block left-0 leading-4 truncate absolute right-0 text-center">${
+        <span class="author">${
           book.abbreviatedAuthor
         }</span>
     </li>`;

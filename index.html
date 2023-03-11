@@ -2,14 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf8" />
-    <link rel="stylesheet" href="twout.css" />
     <style>
+      *,
+      ::before,
+      ::after {
+        box-sizing: border-box;
+        border-width: 0;
+        border-style: solid;
+        border-color: #e5e7eb;
+      }
       body {
         display: grid;
         align-items: center;
         justify-items: center;
         grid-template-columns: repeat(1, minmax(0, 1fr));
         direction: rtl;
+        margin: 0;
         padding-top: 1.5rem;
         background-color: #eaeaea;
         font-family: Palatino Linotype, Palatino, Palladio, URW Palladio L, Book Antiqua,
@@ -50,10 +58,308 @@
         margin: 1rem;
         margin-left: 1.5rem;
         list-style-type: disc;
+        padding: 0;
       }
       #howTo code {
         font-weight: 700;
       }
+
+      .book-case {
+        grid-row: span 2 / span 2;
+        border-color: #613c00;
+        border-top-width: 10px;
+        border-left-width: 10px;
+        border-right-width: 10px;
+        width: 770px;
+      }
+
+      .book-shelf {
+        display: flex;
+        align-items: flex-end;
+        height: 200px;
+        padding: 0px;
+        margin-top: 0.75rem;
+        margin-bottom: 1rem;
+        border-bottom-width: 6px;
+        border-color: #613c00;
+      }
+
+      aside.selected-book {
+        padding: 0px;
+        margin-top: 0.5rem;
+        height: 268px;
+        width: 400px;
+        border-width: 2px;
+      }
+
+      .book-details {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: 1fr 2fr;
+        margin: 0;
+        height: 100%;
+        padding-top: 24px;
+        padding-left: 8px;
+        padding-right: 8px;
+        position: relative;
+        border-color: hsl(var(--book-color));
+        line-height: 1;
+      }
+
+      .book-details dt {
+        visibility: hidden;
+      }
+
+      .book-details dd {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        padding-bottom: 0.25rem;
+        margin: 0;
+      }
+
+      .book {
+        position: relative;
+        z-index: 2;
+        box-sizing: content-box;
+        height: var(--book-height);
+        width: var(--book-thickness);
+        cursor: pointer;
+        white-space: nowrap;
+        border-top-left-radius: 0.125rem;
+        border-top-right-radius: 0.125rem;
+        border-bottom-right-radius: 1px;
+        border-bottom-left-radius: 1px;
+        border-width: 0px;
+        border-style: solid;
+        border-color: hsl(var(--book-color));
+        background-image: linear-gradient(
+          90deg,
+          hsla(var(--book-color), 1) 0%,
+          hsla(var(--book-color), 0.9) 10%,
+          hsla(var(--book-color), 0.9) 70%,
+          hsla(var(--book-color), 0.8) 99%,
+          hsla(var(--book-color), 1) 100%
+        );
+        padding-top: 0.5rem;
+        padding-bottom: 1.5rem;
+        text-align: center;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        line-height: var(--book-thickness);
+        overflow: hidden;
+      }
+
+      .book[data-focused] {
+        bottom: -4px;
+      }
+
+      .book[data-selected] {
+        z-index: 3;
+      }
+
+      .book[data-focused] {
+        z-index: 1;
+      }
+
+      .book[data-spine-pattern="2"] {
+        background-image: repeating-linear-gradient(
+            36deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.1) 1px,
+            transparent 0px,
+            transparent 2px
+          ),
+          linear-gradient(
+            90deg,
+            hsla(var(--book-color), 1) 0%,
+            hsla(var(--book-color), 0.9) 10%,
+            hsla(var(--book-color), 0.9) 70%,
+            hsla(var(--book-color), 0.8) 99%,
+            hsla(var(--book-color), 1) 100%
+          );
+      }
+
+      .book[data-spine-pattern="3"] {
+        background-image: repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.1) 1px,
+            transparent 1px,
+            transparent 6px
+          ),
+          linear-gradient(
+            90deg,
+            hsla(var(--book-color), 1) 0%,
+            hsla(var(--book-color), 0.9) 10%,
+            hsla(var(--book-color), 0.9) 70%,
+            hsla(var(--book-color), 0.8) 99%,
+            hsla(var(--book-color), 1) 100%
+          );
+        background-size: 2px 2px;
+      }
+
+      .book[data-font="serif"] {
+        font-family: Palatino Linotype, Palatino, Palladio, URW Palladio L, Book Antiqua,
+          Baskerville, Bookman Old Style, Bitstream Charter, Nimbus Roman No9 L, Garamond,
+          Apple Garamond, ITC Garamond Narrow, New Century Schoolbook, Century Schoolbook,
+          Century Schoolbook L, Georgia, serif;
+      }
+
+      .book[data-font="sans"] {
+        font-family: Frutiger, Frutiger Linotype, Univers, Calibri, Gill Sans, Gill Sans MT,
+          Myriad Pro, Myriad, DejaVu Sans Condensed, Liberation Sans, Nimbus Sans L, Tahoma, Geneva,
+          Helvetica Neue, Helvetica, Arial, sans-serif;
+      }
+
+      .book[data-font="cursive"] {
+        font-family: Snell Roundhand, Apple Chancery, Brush Script MT, cursive;
+      }
+
+      .book[data-font="fantasy"] {
+        font-family: Luminari, Trattatello, Chalkduster, fantasy;
+      }
+
+      .book[data-text-color="light"] {
+        --tw-text-opacity: 1;
+        color: rgb(243 244 246 / var(--tw-text-opacity));
+      }
+
+      .book[data-text-color="dark"] {
+        --tw-text-opacity: 1;
+        color: rgb(75 85 99 / var(--tw-text-opacity));
+      }
+
+      .book[data-selected] {
+        outline-style: solid;
+        outline-width: 2px;
+        outline-offset: 2px;
+        outline-color: #77abb7;
+      }
+
+      .book[data-focused] {
+        overflow: visible;
+        transform: rotateX(-15deg);
+      }
+
+      .book .title {
+        display: block;
+        position: absolute;
+        top: 8px;
+        bottom: 27px;
+        left: 0px;
+        right: 0px;
+        padding-top: 0.25rem;
+        vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        writing-mode: vertical-lr;
+      }
+      .book .title[data-spine-decoration="top-double"] {
+        border-top: 4px double;
+      }
+
+      .book .title[data-spine-decoration="double"] {
+        border-top: 4px double;
+        border-bottom: 4px double;
+      }
+
+      .book .title[data-spine-decoration="double-solid"] {
+        border-top: 4px double;
+        border-bottom: 2px solid;
+      }
+
+      .book .title[data-spine-decoration="ridge"] {
+        border-top: 4px groove;
+        border-bottom: 4px ridge;
+      }
+
+      .book .author {
+        display: block;
+        position: absolute;
+        bottom: 8px;
+        left: 0px;
+        right: 0px;
+        text-align: center;
+        line-height: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .book::before {
+        background: #fff;
+        border-width: 0 2px 2px;
+        border-style: solid;
+        border-color: inherit;
+        box-sizing: content-box;
+        content: " ";
+        display: none;
+        height: 45px;
+        left: -2px;
+        position: absolute;
+        transform: rotateX(81deg) rotateZ(-4deg);
+        top: -26px;
+        width: calc(100% - 4px);
+        z-index: 3;
+      }
+
+      .book[data-focused]::before {
+        display: block;
+      }
+
+      .book[data-focused]::after {
+        background: radial-gradient(circle at top, #6dd5ed, transparent);
+        border-radius: 0 0 8px 8px;
+        bottom: -13px;
+        content: " ";
+        display: block;
+        height: 8px;
+        left: 50%;
+        margin-left: -8px;
+        position: absolute;
+        width: 16px;
+        z-index: 4;
+      }
+
+      .book-details::before {
+        background: #fff;
+        border-color: inherit;
+        border-style: solid;
+        border-radius: 2px 9px 3px 2px;
+        border-width: 2px 0 3px 2px;
+        box-shadow: -3px 0 7px #555;
+        display: block;
+        content: " ";
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 50%;
+      }
+
+      .book-details::after {
+        background: #fff;
+        border-color: inherit;
+        border-style: solid;
+        border-width: 2px 3px 3px 0;
+        border-radius: 6px 2px 2px 3px;
+        box-shadow: 1px 0 10px #555;
+        display: block;
+        content: " ";
+        height: 100%;
+        left: 50%;
+        overflow: hidden;
+        position: absolute;
+        top: 1px;
+        width: 50%;
+      }
+
+      .data-\[closed\]\:hidden[data-closed] {
+        display: none;
+      }
+
       @media (min-width: 1024px) {
         body {
           grid-template-columns: 800px auto;
