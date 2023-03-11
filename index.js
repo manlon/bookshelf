@@ -275,7 +275,7 @@ const Components = {
           ? Components.BookDetails(books[selected] || books[focused])
           : ""
       }
-      </div>`;
+    </div>`;
   },
 
   BookShelf: (books, offset, selected, focused, moving) => {
@@ -299,8 +299,8 @@ const Components = {
      <aside class="selected-book">
         <dl class="book-details"
             style="--book-color: ${book.backgroundColor};">
-            ${deets.map(([dt, dd]) => Components.BookDetail(dt, dd)).join("")}
-            </dl>
+          ${deets.map(([dt, dd]) => Components.BookDetail(dt, dd)).join("")}
+        </dl>
     </aside>`;
   },
 
@@ -333,9 +333,7 @@ const Components = {
               data-spine-decoration="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
-        <span class="author">${
-          book.abbreviatedAuthor
-        }</span>
+        <span class="author">${book.abbreviatedAuthor}</span>
     </li>`;
   },
 };
