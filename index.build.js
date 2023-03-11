@@ -6133,13 +6133,20 @@
       document.querySelector(`li.book[data-index="${bookIdx}"`).setAttribute("data-selected", "");
     });
     sortable.on("sortable:stop", (e) => {
-      let oldIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
-      let shelf = e.data.dragEvent.source.parentNode;
-      let shelfIdx = parseInt(shelf.dataset.bookIdx, 10);
-      let newIdx = e.data.newIndex + shelfIdx;
-      application.moveBookToIndex(oldIdx, newIdx);
+      let el = e.data.dragEvent.source;
+      let oldIdx = parseInt(el.dataset.index, 10);
+      let newIdx;
+      if (el.previousElementSibling) {
+        let sibIdx = parseInt(el.previousElementSibling.dataset.index, 10);
+        newIdx = sibIdx > oldIdx ? sibIdx : sibIdx + 1;
+      } else {
+        let shelf = e.data.dragEvent.source.parentNode;
+        let shelfIdx = parseInt(shelf.dataset.bookIdx, 10);
+        newIdx = e.data.newIndex + shelfIdx;
+      }
+      application.moveBookToIndex(oldIdx, newIdx, false);
       application.changeSelection(null);
-      application.present({ name: USER_ACTIONS.CLICK_BOOK, data: newIdx });
+      application.focusBook(newIdx);
     });
   }
   initSortable();
