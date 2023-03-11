@@ -306,9 +306,9 @@ const Components = {
 
   BookDetail: (dt, dd) => {
     return `
-    <dt>${dt}</dt>
-    <dd>${dd}</dd>
-  `;
+      <dt>${dt}</dt>
+      <dd>${dd}</dd>
+    `;
   },
 
   Book: (book, selected, focused, moving, i) => {
@@ -333,9 +333,7 @@ const Components = {
               data-spine-decoration="${book.decoration}">
             ${book.abbreviatedTitle}
         </span>
-        <span class="author">${
-          book.abbreviatedAuthor
-        }</span>
+        <span class="author">${book.abbreviatedAuthor}</span>
     </li>`;
   },
 };

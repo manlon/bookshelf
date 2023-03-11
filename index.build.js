@@ -15,9 +15,9 @@
           ${deets.map(([e,t])=>K.BookDetail(e,t)).join("")}
         </dl>
     </aside>`),BookDetail:(n,e)=>`
-    <dt>${n}</dt>
-    <dd>${e}</dd>
-  `,Book:(n,e,t,r,o)=>`
+      <dt>${n}</dt>
+      <dd>${e}</dd>
+    `,Book:(n,e,t,r,o)=>`
     <li style="
             --book-color: ${n.backgroundColor};
             --book-height: ${n.height}px;
