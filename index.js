@@ -189,104 +189,18 @@ const STATE_ACTIONS = {
   REGISTER_MULTIPLIER: "registerMultiplier",
 };
 
-const DIRECTIONAL_KEYS = [
-  "h",
-  "j",
-  "k",
-  "l",
-  "i",
-  ";",
-  "ArrowLeft",
-  "ArrowRight",
-  "ArrowUp",
-  "ArrowDown",
-];
-
-const directionFromKey = (key) => {
-  switch (key) {
-    case "ArrowLeft":
-    case "h":
-    case "j":
-      return "l";
-    case "ArrowRight":
-    case "l":
-    case ";":
-      return "r";
-    case "ArrowUp":
-    case "i":
-      return "u";
-    case "ArrowDown":
-    case "k":
-      return "k";
-    default:
-      return null;
-  }
-};
-
-const enterDefaultMode = function () {
-  this.present({
-    name: STATE_ACTIONS.ENTER_DEFAULT_MODE,
-  });
-};
-
-const moveCursor = function (direction) {
-  this.present({
-    name: STATE_ACTIONS.MOVE_CURSOR,
-    data: direction,
-  });
-};
-
-const enterMovingMode = function () {
-  this.present({
-    name: STATE_ACTIONS.ENTER_MOVING_MODE,
-  });
-};
-
-const moveBook = function (direction) {
-  this.present({
-    name: STATE_ACTIONS.MOVE_BOOK,
-    data: direction,
-  });
-};
-
-const registerMultiplier = function (multiplier) {
-  this.present({
-    name: STATE_ACTIONS.REGISTER_MULTIPLIER,
-    data: multiplier,
-  });
-};
-
-const handleKeyDown = function (e) {
-  if (e.key === " ") {
-    // don't scroll
-    e.preventDefault();
-  }
-  this.present({
-    name: USER_ACTIONS.KEY_DOWN,
-    data: e.key,
-  });
-};
-
-const handleKeyUp = function (e) {
-  if (e.key === " ") {
-    // don't scroll
-    e.preventDefault();
-  }
-  this.present({
-    name: USER_ACTIONS.KEY_UP,
-    data: e.key,
-  });
-};
-
-const handleBookClick = function (e, el) {
-  e.preventDefault();
-
-  const index = parseInt(el.dataset.index);
-  this.present({
-    name: USER_ACTIONS.CLICK_BOOK,
-    data: index,
-  });
-};
+const DIRECTIONAL_KEYS = new Map([
+  ["h", "l"],
+  ["j", "l"],
+  ["k", "k"],
+  ["l", "r"],
+  ["i", "u"],
+  [";", "r"],
+  ["ArrowLeft", "l"],
+  ["ArrowRight", "r"],
+  ["ArrowUp", "u"],
+  ["ArrowDown", "k"],
+]);
 
 class ApplicationState {
   constructor(initialData, renderFn) {
@@ -320,17 +234,23 @@ class ApplicationState {
     if (state.mode === MODES.MOVING) {
       if (state.key >= 1 && state.key <= 9) {
         // store multiplier
-        registerMultiplier.bind(this)(state.key);
+        this.present({
+          name: STATE_ACTIONS.REGISTER_MULTIPLIER,
+          data: state.key,
+        });
         return true;
       } else if (state.key === " ") {
         // unset multiplier
         // enter default mode
-        enterDefaultMode.bind(this)();
+        this.present({
+          name: STATE_ACTIONS.ENTER_DEFAULT_MODE,
+        });
         return true;
-      } else if (DIRECTIONAL_KEYS.includes(state.key)) {
-        // execute move
-        direction = directionFromKey(state.key);
-        moveBook.bind(this)(direction);
+      } else if ((direction = DIRECTIONAL_KEYS.get(state.key))) {
+        this.present({
+          name: STATE_ACTIONS.MOVE_BOOK,
+          data: direction,
+        });
         return true;
       }
     } else if (state.mode === MODES.DEFAULT) {
@@ -339,14 +259,18 @@ class ApplicationState {
         // register selected book
         enterViewingMode.bind(this)();
         return true;
-      } else if (DIRECTIONAL_KEYS.includes(state.key)) {
-        direction = directionFromKey(state.key);
-        moveCursor.bind(this)(direction);
+      } else if ((direction = DIRECTIONAL_KEYS.get(state.key))) {
+        this.present({
+          name: STATE_ACTIONS.MOVE_CURSOR,
+          data: direction,
+        });
         return true;
       } else if (state.key === " ") {
         // KEEP selected book
         // enter moving mode
-        enterMovingMode.bind(this)();
+        this.present({
+          name: STATE_ACTIONS.ENTER_MOVING_MODE,
+        });
         return true;
       }
     }
@@ -555,12 +479,20 @@ const render = (state) => {
 };
 
 const attachEventHandlers = (app) => {
-  window.addEventListener("keydown", handleKeyDown.bind(app), false);
-  window.addEventListener("keyup", handleKeyUp.bind(app), false);
+  window.addEventListener("keydown", (e) => {
+    if (e.key === " ") e.preventDefault(); // don't scroll
+    app.present({ name: USER_ACTIONS.KEY_DOWN, data: e.key });
+  });
+  window.addEventListener("keyup", (e) => {
+    if (e.key === " ") e.preventDefault(); // don't scroll
+    app.present({ name: USER_ACTIONS.KEY_UP, data: e.key });
+  });
   document.getElementById("app").addEventListener("click", (e) => {
     let bookEl = e.target.closest("li.book");
     if (bookEl) {
-      handleBookClick.bind(app)(e, bookEl);
+      e.preventDefault();
+      const index = parseInt(bookEl.dataset.index);
+      app.present({ name: USER_ACTIONS.CLICK_BOOK, data: index })
     }
   });
 };
