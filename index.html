@@ -7,9 +7,6 @@
       ::before,
       ::after {
         box-sizing: border-box;
-        border-width: 0;
-        border-style: solid;
-        border-color: #e5e7eb;
       }
       body {
         display: grid;
@@ -66,10 +63,9 @@
 
       .book-case {
         grid-row: span 2 / span 2;
+        border-width: 10px 10px 0;
+        border-style: solid;
         border-color: #613c00;
-        border-top-width: 10px;
-        border-left-width: 10px;
-        border-right-width: 10px;
         width: 770px;
       }
 
@@ -80,7 +76,8 @@
         padding: 0px;
         margin-top: 0.75rem;
         margin-bottom: 1rem;
-        border-bottom-width: 6px;
+        border-width: 0 0 6px;
+        border-style: solid;
         border-color: #613c00;
       }
 
@@ -89,7 +86,7 @@
         margin-top: 0.5rem;
         height: 268px;
         width: 400px;
-        border-width: 2px;
+        border: 2px solid #e5e7eb;
       }
 
       .book-details {
@@ -152,14 +149,17 @@
 
       .book[data-focused] {
         bottom: -4px;
+        z-index: 1;
+        overflow: visible;
+        transform: rotateX(-15deg);
       }
 
       .book[data-selected] {
+        outline-style: solid;
+        outline-width: 2px;
+        outline-offset: 2px;
+        outline-color: #77abb7;
         z-index: 3;
-      }
-
-      .book[data-focused] {
-        z-index: 1;
       }
 
       .book[data-spine-pattern="2"] {
@@ -221,25 +221,11 @@
       }
 
       .book[data-text-color="light"] {
-        --tw-text-opacity: 1;
-        color: rgb(243 244 246 / var(--tw-text-opacity));
+        color: rgb(243 244 246);
       }
 
       .book[data-text-color="dark"] {
-        --tw-text-opacity: 1;
-        color: rgb(75 85 99 / var(--tw-text-opacity));
-      }
-
-      .book[data-selected] {
-        outline-style: solid;
-        outline-width: 2px;
-        outline-offset: 2px;
-        outline-color: #77abb7;
-      }
-
-      .book[data-focused] {
-        overflow: visible;
-        transform: rotateX(-15deg);
+        color: rgb(75 85 99);
       }
 
       .book .title {
