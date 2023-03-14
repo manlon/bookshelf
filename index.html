@@ -12,8 +12,7 @@
         display: grid;
         align-items: center;
         justify-items: center;
-        grid-template-columns: repeat(1, minmax(0, 1fr));
-        direction: rtl;
+        grid-template-columns: 1fr;
         margin: 0;
         padding-top: 1.5rem;
         background-color: #eaeaea;
@@ -24,15 +23,13 @@
       }
       main {
         display: contents;
-        direction: ltr;
         margin: 0.75rem;
       }
       #howTo {
         padding: 1.5rem;
         font-size: 0.875rem;
         line-height: 1.25rem;
-        order: -1;
-        direction: ltr;
+        order: 0;
       }
       #howTo[data-closed] {
         display: none;
@@ -62,11 +59,12 @@
       }
 
       .book-case {
-        grid-row: span 2 / span 2;
+        grid-row: span 2;
         border-width: 10px 10px 0;
         border-style: solid;
         border-color: #613c00;
         width: 770px;
+        order: 1;
       }
 
       .book-shelf {
@@ -87,6 +85,7 @@
         height: 268px;
         width: 400px;
         border: 2px solid #e5e7eb;
+        order: 2;
       }
 
       .book-details {
@@ -342,15 +341,17 @@
         width: 50%;
       }
 
-      .data-\[closed\]\:hidden[data-closed] {
-        display: none;
-      }
-
       @media (min-width: 1024px) {
         body {
-          grid-template-columns: 800px auto;
+          grid-template-columns: auto 800px;
         }
         #howTo {
+          order: 2;
+        }
+        .book-case {
+          order: 1;
+        }
+        aside.selected-book {
           order: 0;
         }
       }
