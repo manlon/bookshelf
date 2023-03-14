@@ -37,7 +37,7 @@ function shuffle(array) {
 }
 const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
 const weightedChoice = (itemsWithWeights) => {
-  let thresh = Math.random() * itemsWithWeights.map(([a, b]) => b).reduce((a, b) => a + b);
+  let thresh = Math.random() * itemsWithWeights.map(([, b]) => b).reduce((a, b) => a + b);
   return itemsWithWeights.reduce(
     ([best, sum], [item, wt]) => (sum < thresh ? [item, sum + wt] : [best, sum]),
     [null, 0]
@@ -99,8 +99,8 @@ class Book {
   get abbreviatedAuthor() {
     return (this._abbrAuth ||= rotate(
       this.author
-        .replace(/[^a-zA-Z0-9,\ ]/g, "")
-        .split(/\ |,/)
+        .replace(/[^a-zA-Z0-9, ]/g, "")
+        .split(/ |,/)
         .filter((s) => s)
         .map((s) => s[0])
     )
@@ -147,17 +147,11 @@ class ApplicationState {
     this.mode = ApplicationState.MODES.DEFAULT;
     this.focused = 0;
     this.selected = null;
-    this.mode = ApplicationState.MODES.DEFAULT;
     this.multiplier = 1;
     this._render = renderFn;
   }
   get isMoving() {
     return this.mode == ApplicationState.MODES.DEFAULT;
-  }
-
-  focusBook(idx) {
-    this.focused = idx;
-    this.render();
   }
 
   keyDown(key) {
@@ -183,6 +177,11 @@ class ApplicationState {
     if (key === " ") {
       this.enterDefaultMode();
     }
+  }
+
+  focusBook(idx) {
+    this.focused = idx;
+    this.render();
   }
 
   moveCursor(direction) {
@@ -250,13 +249,13 @@ class ApplicationState {
 
 const Components = {
   BookList: ({ books, selected, focused, isMoving }) => {
-    let [chunks, _] = books.reduce(
+    let [chunks, ] = books.reduce(
       ([chunks, width], book, i) => {
         if (book.thickness + width >= SHELF_WIDTH) {
           chunks.push([[book], i]);
           return [chunks, book.thickness];
         } else {
-          let [chunk, _] = chunks[chunks.length - 1];
+          let [chunk, ] = chunks[chunks.length - 1];
           chunk.push(book);
           return [chunks, width + book.thickness];
         }
@@ -289,7 +288,7 @@ const Components = {
   },
 
   BookDetails: (book) => {
-    deets = [
+    let deets = [
       ["Title", `<b>${book.title}</b>`],
       ["Author", book.author],
       ["Year", `© ${book.year}`],
@@ -361,7 +360,7 @@ const attachEventHandlers = (app) => {
       app.focusBook(index);
     }
   });
-  document.getElementById("toggleHowTo").addEventListener("click", (e) => {
+  document.getElementById("toggleHowTo").addEventListener("click", () => {
     document.getElementById("howTo").toggleAttribute("data-closed");
   });
 };
