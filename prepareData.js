@@ -28,12 +28,12 @@ const pluckBookAttrs = (book) => {
         title, 
         author: name, 
         year,
-        url, 
+        // url, 
         characters,
-        languages, 
-        subjects,
-        downloads, 
-        rank
+        // languages, 
+        // subjects,
+        // downloads, 
+        // rank
     };
 };
 
