@@ -5,36 +5,49 @@ const pluckBookAttrs = (book) => {
             statistics: {
                 characters
             }
-        }, 
+        },
         bibliography: {
             publication: {
-                year 
-            }, 
-            title, 
+                year
+            },
+            title,
             author: {
-                name 
-            }, 
-            languages, 
+                name
+            },
+            languages,
             subjects
-        }, 
+        },
         metadata: {
-            url, 
-            downloads, 
+            url,
+            downloads,
             rank
         }
     } = book;
 
     return {
-        title, 
-        author: name, 
+        title,
+        author: name,
         year,
-        // url, 
+        // url,
         characters,
-        // languages, 
+        // languages,
         // subjects,
-        // downloads, 
+        // downloads,
         // rank
     };
 };
 
-module.exports = pluckBookAttrs;
+import classics from './classics.json'
+const bookArray = classics.map((b) => {
+    let {title, author, year, characters} = pluckBookAttrs(b);
+    return [title, author, year, characters]
+})
+function writeModule(){
+    let mod = `
+const books=${JSON.stringify(bookArray)};
+const bookObjs = books.map(([t,a,y,c]) => {return {title: t, author: a, year: y, characters: c}});
+export default bookObjs;
+`
+    Bun.write('plucked-classics.js', mod);
+}
+writeModule()

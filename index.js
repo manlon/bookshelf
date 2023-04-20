@@ -1,5 +1,5 @@
 import Sortable from "@shopify/draggable/lib/sortable";
-import BOOKS from "./plucked-classics.json";
+import BOOKS from "./plucked-classics.js";
 import morphdom from "morphdom";
 
 const FONTS = [
