@@ -1,7 +1,7 @@
-import Sortable from "@shopify/draggable/lib/sortable";
+import SortableDefault from "@shopify/draggable/lib/sortable";
 import BOOKS from "./plucked-classics.js";
 import morphdom from "morphdom";
-
+const Sortable = SortableDefault.default;
 const FONTS = [
   ["serif", 2],
   ["sans", 2],
