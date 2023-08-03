@@ -1,7 +1,7 @@
-import Sortable from "@shopify/draggable/lib/sortable";
-import BOOKS from "./plucked-classics.json";
+import SortableDefault from "@shopify/draggable/lib/sortable";
+import BOOKS from "./plucked-classics.js";
 import morphdom from "morphdom";
-
+const Sortable = SortableDefault.default;
 const FONTS = [
   ["serif", 2],
   ["sans", 2],
@@ -14,7 +14,6 @@ const PAGE_THICKNESS = 0.0667;
 const MAX_THICKNESS = 80;
 const MIN_HEIGHT = 100;
 const MAX_HEIGHT = 145;
-const APPROX_CHAR_PER_PAGE = 1277;
 const NUM_BOOKS = 47;
 const SHELF_WIDTH = 660;
 const LIGHT_SAT_DELTA = 10;
@@ -73,15 +72,13 @@ class Book {
   static randomLibrary(bookData, size) {
     return randomSubset(bookData, size).map((b) => new Book(b));
   }
-  constructor({ title, author, characters, year }) {
-    Object.assign(this, { title, author, characters, year });
+  constructor({ title, author, pages, year }) {
+    Object.assign(this, { title, author, pages, year });
     this.id = randomIntRange(0, 100000000);
     this.font = weightedChoice(FONTS);
     [this.backgroundColor, this.textColor] = randomColor();
   }
-  get pages() {
-    return (this._pages ||= Math.floor(this.characters / APPROX_CHAR_PER_PAGE));
-  }
+
   get height() {
     if (this._height) return this._height;
     let potential = (this.pages / (MAX_HEIGHT - MIN_HEIGHT)) * 2 + MIN_HEIGHT;
