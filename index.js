@@ -30,19 +30,25 @@ function shuffle(array) {
   while (currentIndex != 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
   }
   return array;
 }
 const randomSubset = (items, n) => shuffle([...items]).slice(0, n);
 const weightedChoice = (itemsWithWeights) => {
-  let thresh = Math.random() * itemsWithWeights.map(([, b]) => b).reduce((a, b) => a + b);
+  let thresh =
+    Math.random() * itemsWithWeights.map(([, b]) => b).reduce((a, b) => a + b);
   return itemsWithWeights.reduce(
-    ([best, sum], [item, wt]) => (sum < thresh ? [item, sum + wt] : [best, sum]),
-    [null, 0]
+    ([best, sum], [item, wt]) =>
+      sum < thresh ? [item, sum + wt] : [best, sum],
+    [null, 0],
   )[0];
 };
-const randomIntRange = (min, max) => Math.floor((max - min) * Math.random() + min);
+const randomIntRange = (min, max) =>
+  Math.floor((max - min) * Math.random() + min);
 const clampInt = (val, max, min = 0) => {
   [min, max] = min < max ? [min, max] : [max, min];
   return Math.max(Math.min(Math.floor(val), max), min);
@@ -82,12 +88,15 @@ class Book {
   get height() {
     if (this._height) return this._height;
     let potential = (this.pages / (MAX_HEIGHT - MIN_HEIGHT)) * 2 + MIN_HEIGHT;
-    return (this._height = clampInt(randomIntRange(MIN_HEIGHT, potential), MAX_HEIGHT));
+    return (this._height = clampInt(
+      randomIntRange(MIN_HEIGHT, potential),
+      MAX_HEIGHT,
+    ));
   }
   get thickness() {
     return (this._thickness ||= clampInt(
       this.pages * PAGE_THICKNESS + COVER_THICKNESS,
-      MAX_THICKNESS
+      MAX_THICKNESS,
     ));
   }
   get abbreviatedTitle() {
@@ -99,7 +108,7 @@ class Book {
         .replace(/[^a-zA-Z0-9, ]/g, "")
         .split(/ |,/)
         .filter((s) => s)
-        .map((s) => s[0])
+        .map((s) => s[0]),
     )
       .join("")
       .substring(0, 3)
@@ -212,7 +221,11 @@ class ApplicationState {
   moveSelectedBook(direction) {
     let dir = direction === "l" ? -1 : 1;
     let oldIdx = this.selected;
-    let newIdx = clampInt(oldIdx + dir * this.multiplier, 0, this.books.length - 1);
+    let newIdx = clampInt(
+      oldIdx + dir * this.multiplier,
+      0,
+      this.books.length - 1,
+    );
     this.selected = newIdx;
     this.multiplier = 1;
     this.moveBookToIndex(oldIdx, newIdx);
@@ -246,24 +259,26 @@ class ApplicationState {
 
 const Components = {
   BookList: ({ books, selected, focused, isMoving }) => {
-    let [chunks, ] = books.reduce(
+    let [chunks] = books.reduce(
       ([chunks, width], book, i) => {
         if (book.thickness + width >= SHELF_WIDTH) {
           chunks.push([[book], i]);
           return [chunks, book.thickness];
         } else {
-          let [chunk, ] = chunks[chunks.length - 1];
+          let [chunk] = chunks[chunks.length - 1];
           chunk.push(book);
           return [chunks, width + book.thickness];
         }
       },
-      [[[[], 0]], 0]
+      [[[[], 0]], 0],
     );
     return `
     <div class="dummy">
       <div class="book-case">
       ${chunks
-        .map(([books, offset]) => Components.BookShelf(books, offset, selected, focused, isMoving))
+        .map(([books, offset]) =>
+          Components.BookShelf(books, offset, selected, focused, isMoving),
+        )
         .join("")}
       </div>
       ${
@@ -279,7 +294,9 @@ const Components = {
     <ul class="book-shelf"
         data-book-idx="${offset}">
         ${books
-          .map((book, i) => Components.Book(book, selected, focused, moving, i + offset))
+          .map((book, i) =>
+            Components.Book(book, selected, focused, moving, i + offset),
+          )
           .join("")}
     </ul>`;
   },
@@ -373,11 +390,16 @@ function initSortable() {
   sortable.on("sortable:start", (e) => {
     let bookIdx = parseInt(e.data.dragEvent.source.dataset.index, 10);
     let book = application.changeSelection(bookIdx);
-    morph(document.querySelector("aside.selected-book"), Components.BookDetails(book));
+    morph(
+      document.querySelector("aside.selected-book"),
+      Components.BookDetails(book),
+    );
     Array.from(document.querySelectorAll("li.book")).forEach(function (el) {
       el.removeAttribute("data-focused");
     });
-    document.querySelector(`li.book[data-index="${bookIdx}"`).setAttribute("data-selected", "");
+    document
+      .querySelector(`li.book[data-index="${bookIdx}"`)
+      .setAttribute("data-selected", "");
   });
   sortable.on("sortable:stop", (e) => {
     let el = e.data.dragEvent.source;
